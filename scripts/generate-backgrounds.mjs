@@ -8,7 +8,7 @@ const escape = text => text.replaceAll('&','&amp;').replaceAll('<','&lt;').repla
 function palette(item,day) {
   const snow = item.kind.startsWith('snow'), ice = item.kind.startsWith('freezing'), storm = ['thunderstorm','hail'].includes(item.kind), wet = ['rain','rain-showers','drizzle'].includes(item.kind), fog = item.kind.includes('fog');
   if(!day)return {sky:storm?'#14222f':'#1b2936',horizon:'#3c5260',cloud:storm?'#3f5664':'#526674',cloudDark:'#334b59',mountain:'#45616a',snow:'#a8c0c0',water:'#2c4a52',glint:'#638b92',bank:snow||ice?'#709793':'#24483e',tree:'#142d30',frost:'#b2cdcd',fog:'#9eb1b3'};
-  return {sky:storm?'#2a3e49':fog?'#5f746e':snow||ice?'#46616a':wet?'#344f54':item.kind==='clear'?'#526e65':'#3b5350',horizon:storm?'#4d6571':snow||ice?'#a6bab8':'#8c9e82',cloud:storm?'#647c86':snow||ice?'#9db3b8':wet?'#78948f':'#9aab94',cloudDark:storm?'#455f6d':wet?'#526f72':'#657f73',mountain:snow||ice?'#87a3a8':'#809586',snow:'#d1ddd0',water:snow||ice?'#517a7f':storm?'#345a65':'#456b61',glint:storm?'#648d97':'#a2b49a',bank:snow||ice?'#afc7bd':'#294c40',tree:ice?'#36585b':'#1b352d',frost:'#d1e1d4',fog:'#bac9be'};
+  return {sky:storm?'#4d686c':fog?'#81958a':snow||ice?'#73928f':wet?'#607e76':item.kind==='clear'?'#819d85':'#718b7c',horizon:storm?'#788e8b':snow||ice?'#c0d0c5':'#b0bea0',cloud:storm?'#8da49e':snow||ice?'#becfc7':wet?'#a0b7a9':'#bdcbb0',cloudDark:storm?'#6b8780':wet?'#7e9b8d':'#95ad98',mountain:snow||ice?'#a2bdb2':'#9ab197',snow:'#e0e9d7',water:snow||ice?'#789f98':storm?'#567f76':'#749982',glint:storm?'#94b3a2':'#c0ceaa',bank:snow||ice?'#c4d8c7':'#507659',tree:ice?'#54796d':'#355844',frost:'#e0edda',fog:'#d1ddca'};
 }
 function sky(item,day,p,wide) {
   const y = wide ? 12 : 190;
