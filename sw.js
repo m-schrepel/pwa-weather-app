@@ -1,5 +1,5 @@
 // Generated as sw.js by node build.mjs. Its asset hash changes on every build change.
-const BUILD = '51e9ff324a4bfa94';
+const BUILD = 'c7bc968ba4bc47b9';
 const BASE = new URL('./', self.location.href);
 const PREFIX = `pwa-weather:${BASE.pathname}:`;
 const SHELL = `${PREFIX}shell:${BUILD}`;

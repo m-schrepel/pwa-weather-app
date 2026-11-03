@@ -91,16 +91,21 @@ async function loadWeather() {
   loading = true;
   lastAttempt = Date.now();
   $('data-status').textContent = 'UPDATING';
+  $('data-status').removeAttribute('aria-label');
   $('load-message').textContent = 'Fetching Kirkland weather…';
+  let pulledAt;
   const [weather, air] = await Promise.allSettled([
-    fetchJson(weatherUrl()).then(normalizeForecast), fetchJson(airQualityUrl()),
+    fetchJson(weatherUrl()).then(data => {
+      pulledAt = Date.now() / 1000;
+      return normalizeForecast(data);
+    }), fetchJson(airQualityUrl()),
   ]);
   if (weather.status === 'fulfilled') {
     lastWeather = weather.value;
     renderWeather(lastWeather);
     renderAirQuality(air.status === 'fulfilled' ? air.value : null);
     const age = Date.now() / 1000 - lastWeather.current.time;
-    $('data-status').textContent = lastWeather.saved ? 'SAVED FORECAST' : age > 3 * 3600 ? 'OLDER FORECAST' : 'LIVE FORECAST';
+    $('data-status').textContent = lastWeather.saved ? 'SAVED FORECAST' : age > 3 * 3600 ? 'OLDER FORECAST' : `FORECAST AS OF ${clockTime(pulledAt)}`;
     const validTime = `Forecast valid ${localTime(lastWeather.current.time,{month:'short',day:'numeric',year:'numeric'})}, ${clockTime(lastWeather.current.time)} · Pacific time`;
     $('data-status').title = validTime;
     $('data-status').setAttribute('aria-label', `${$('data-status').textContent}. ${validTime}`);
