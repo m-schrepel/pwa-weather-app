@@ -46,18 +46,19 @@
       <div class="section-heading"><h2 id="daily-title">5-DAY OUTLOOK</h2><span>°F</span></div>
       <div class="daily-scroll" tabindex="0" role="region" aria-label="Five-day forecast; scroll horizontally for more days"><div class="daily-track" id="daily"></div></div>
     </section>
-    </section>
     <section class="section hourly-section" id="forecast" aria-labelledby="hourly-title">
       <div class="section-heading"><h2 id="hourly-title">NEXT 12 HOURS</h2><span>LOCAL TIME</span></div>
       <div class="hourly-scroll" tabindex="0" role="region" aria-label="12-hour forecast; scroll horizontally for more hours"><div class="hourly-track" id="hourly"></div></div>
-      <p class="scroll-hint">SWIPE TO SEE THE EVENING <span aria-hidden="true">→</span></p>
+    </section>
+    <dl class="sun-summary" aria-label="Sunrise and sunset times">
+      <div><dt>Sunrise</dt><dd id="sunrise">—</dd></div>
+      <div><dt>Sunset</dt><dd id="sunset">—</dd></div>
+    </dl>
     </section>
 
 
-    <section class="section sun-section" aria-labelledby="sun-title">
-      <div class="section-heading"><h2 id="sun-title">SUNRISE / SUNSET</h2><span data-icon="sun"></span></div>
-      <div class="sun-times"><div><span class="eyebrow">SUNRISE</span><p class="sun-time" id="sunrise">—</p></div><div class="sun-divider" aria-hidden="true"><span>↗</span><span>↘</span></div><div><span class="eyebrow">SUNSET</span><p class="sun-time" id="sunset">—</p></div></div>
-    </section>
+
+
     <footer class="app-footer"><span class="footer-logo" aria-hidden="true">▦</span><p>A small window into the weather.</p><span id="updated">KIRKLAND, WA · WAITING FOR FORECAST</span><p class="attribution">Weather: <a href="https://open-meteo.com/">Open-Meteo</a><br>Air quality: <a href="https://atmosphere.copernicus.eu/">CAMS</a> via <a href="https://open-meteo.com/en/docs/air-quality-api">Open-Meteo</a></p></footer>
     <aside class="live-controls" aria-label="Forecast status and refresh">
       <p id="load-message" role="status" aria-live="polite">Fetching Kirkland weather…</p>

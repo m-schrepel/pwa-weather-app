@@ -32,7 +32,7 @@ Weather attribution: [Open-Meteo](https://open-meteo.com/). Air-quality attribut
 
 ## Design and scope
 
-Dark LCD/pixel style; a full-screen lake scene with current weather, detail cards, and a horizontally scrolling five-day forecast. Hourly weather and sunrise/sunset follow below. On short screens the opening section grows to avoid clipping data.
+Dark LCD/pixel style; a full-screen lake scene with current weather, detail cards, and a horizontally scrolling five-day forecast. Hourly weather and a plain sunrise/sunset time row are included in the same opening overview. On short screens the opening section grows to avoid clipping data.
 
 No ads, analytics, login, settings screen, radar, alerts, or push notifications. Device location remains a later step; the installed app uses Kirkland.
 
