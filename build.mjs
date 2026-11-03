@@ -1,18 +1,24 @@
-import { copyFile, mkdir, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 
-// This prototype is already static HTML/CSS/JS. Package only public assets.
 const assets = [
-  'index.html',
-  'styles.css',
-  'app.js',
-  'weather.mjs',
-  'manifest.webmanifest',
-  'icon.svg',
+  'index.html', 'styles.css', 'app.js', 'weather.mjs', 'pwa.mjs',
+  'manifest.webmanifest', 'icon.svg',
+  'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png',
+  'icons/apple-touch-180.png',
 ];
-const output = new URL('./docs/', import.meta.url);
-await mkdir(output, { recursive: true });
-for (const asset of assets) {
-  await copyFile(new URL(asset, import.meta.url), new URL(asset, output));
+const root = new URL('./', import.meta.url);
+const output = new URL('./docs/', root);
+const hash = createHash('sha256');
+for (const asset of assets) hash.update(asset).update(await readFile(new URL(asset, root)));
+const template = await readFile(new URL('sw-template.js', root), 'utf8');
+hash.update(template);
+const worker = template.replace('__BUILD_VERSION__', hash.digest('hex').slice(0,16))
+  .replace('__ASSET_LIST__', JSON.stringify(assets));
+await writeFile(new URL('sw.js', root), worker);
+await mkdir(new URL('icons/', output), {recursive:true});
+for (const asset of [...assets, 'sw.js']) {
+  await copyFile(new URL(asset, root), new URL(asset, output));
 }
 await writeFile(new URL('.nojekyll', output), '');
-console.log('Packaged static weather app in docs/');
+console.log('Packaged installable weather app in docs/ with a versioned service worker.');

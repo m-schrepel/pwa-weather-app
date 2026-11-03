@@ -124,3 +124,74 @@
 @media (max-height: 740px) { .current { height: auto; min-height: 100svh; padding-bottom: 18px; } }
 
 #updated { display: block; font-size: 10px; line-height: 1.6; letter-spacing: .3px; }
+
+[hidden] { display: none !important; }
+.pwa-controls { padding: 20px 0 max(28px, env(safe-area-inset-bottom)); border-top: 1px dashed var(--line); }
+.pwa-controls h2 { margin: 0 0 12px; font-weight: 400; font-size: 11px; letter-spacing: 1.3px; }
+.pwa-controls p { color: var(--muted); font-size: 11px; line-height: 1.6; }
+.pwa-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.pwa-actions button { font: inherit; font-size: 12px; min-height: 44px; padding: 0 16px; border: 1px solid var(--line); border-radius: 0; background: var(--panel); color: var(--ink); cursor: pointer; }
+.pwa-actions button:disabled { opacity: .6; cursor: wait; }
+
+/* The complete weather overview fits together in the opening phone screen. */
+.current { height: auto; min-height: 100svh; padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+.current .preview-label { padding: 10px 0; }
+.current .location-header { padding: 15px 0 16px; flex-shrink: 0; }
+.current .current-copy { padding-top: 0; }
+.current .condition { font-size: 13px; margin-bottom: 5px; }
+.current .temperature { height: 90px; font-size: 90px; letter-spacing: -8px; }
+.current .degree { font-size: 52px; }
+.current .high-low { margin-top: 7px; font-size: 12px; }
+.current .high-low .feels { font-size: 11px; }
+.current .details-section { margin-top: 16px; }
+.current .metric { min-height: 92px; padding: 9px 11px; }
+.current .metric-label { gap: 6px; }
+.current .metric-label .weather-icon { width: 14px; height: 14px; }
+.current .metric-value { font-size: 25px; margin: 6px 0; }
+.current .metric-note { font-size: 10px; line-height: 1.4; }
+.current .wind-status { font-size: 9px; margin-top: 4px; }
+.current .meter, .current .segmented-meter { display: none; }
+.current .daily-section, .current .hourly-section { flex-shrink: 0; margin-top: 14px; }
+.current .daily-section .section-heading, .current .hourly-section .section-heading { margin-bottom: 8px; }
+.current .day-card { padding: 8px 5px; gap: 5px; }
+.current .daily-track { padding-bottom: 4px; }
+.current .hourly-scroll { margin-right: 0; padding-bottom: 4px; }
+.current .hourly-track { padding-right: 0; gap: 8px; }
+.current .hour { padding: 9px 0; gap: 8px; background: #102020c9; border-color: #a4b6a530; }
+.current .hour .weather-icon { width: 22px; height: 22px; }
+.current .hour .hour-temp { font-size: 17px; }
+.sun-summary { display: flex; justify-content: space-between; gap: 14px; flex-shrink: 0; margin: 10px 0 0; padding: 12px 0 0; border-top: 1px solid #a4b6a54d; font-size: 11px; text-shadow: 0 1px 4px #0b191d; }
+.sun-summary div { display: flex; gap: 8px; align-items: baseline; }
+.sun-summary dt { color: #bdcbb8; }
+.sun-summary dd { margin: 0; color: var(--ink); white-space: nowrap; }
+@media (max-height: 740px) {
+  .current .location-header { padding: 10px 0; }
+  .current .temperature { height: 76px; font-size: 76px; }
+  .current .degree { font-size: 45px; }
+  .current .details-section, .current .daily-section, .current .hourly-section { margin-top: 10px; }
+  .current .metric { padding: 8px 10px; min-height: 86px; }
+  .current .metric-value { margin: 5px 0; font-size: 23px; }
+  .current .day-card { padding: 6px 5px; gap: 4px; }
+  .current .hour { padding: 7px 0; gap: 6px; }
+  .sun-summary { margin-top: 8px; padding-top: 9px; }
+}
+@media (max-width: 350px) { .sun-summary { font-size: 10px; gap: 8px; } .sun-summary div { gap: 5px; } }
+@media (max-height: 740px) {
+  .current .location-header { padding: 6px 0; }
+  .current .temperature { height: 72px; font-size: 72px; }
+  .current .details-section, .current .daily-section, .current .hourly-section { margin-top: 8px; }
+  .current .day-card { padding: 4px 5px; gap: 3px; }
+  .current .day-card .weather-icon { width: 20px; height: 20px; }
+  .current .hour { padding: 5px 0; gap: 4px; }
+  .current .hour .weather-icon { width: 18px; height: 18px; }
+}
+/* Give the sun times a clear reading size, with quiet labels above them. */
+.sun-summary div { flex-direction: column; align-items: flex-start; gap: 4px; }
+.sun-summary div:last-child { align-items: flex-end; }
+.sun-summary dt { font-size: 11px; line-height: 1; }
+.sun-summary dd { font-size: 26px; line-height: 1; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+@media (max-height: 740px) {
+  .sun-summary { margin-top: 5px; padding-top: 5px; }
+  .sun-summary dt { font-size: 10px; }
+  .sun-summary dd { font-size: 22px; }
+}

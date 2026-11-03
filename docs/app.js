@@ -74,12 +74,13 @@ function setValues(values) {
 function renderWeather(data) {
   const {current:c, hours, days, outlook} = data;
   const view = condition(c.code, c.isDay), mode = view.scene;
+  const saved = data.saved || Date.now() / 1000 - c.time > 3 * 3600;
   const palette = c.isDay ? palettes[mode] : palettes.night;
   document.querySelector('main').dataset.weather = mode;
   document.querySelector('.date-stamp').setAttribute('title', 'Forecast valid time · Pacific time');
   setValues({
     'current-title':view.label, 'current-temp':rounded(c.temp), high:`${rounded(days[0].high)}°`, low:`${rounded(days[0].low)}°`, feels:`${rounded(c.feels)}°`,
-    'rain-value':rounded(outlook.chance), 'rain-note':outlook.note, 'wind-value':rounded(c.wind), 'wind-direction':c.direction, 'gust-value':`${rounded(c.gust)} mph`,
+    'rain-value':rounded(outlook.chance), 'rain-note':saved ? `Saved: ${outlook.note.toLowerCase()}` : outlook.note, 'wind-value':rounded(c.wind), 'wind-direction':c.direction, 'gust-value':`${rounded(c.gust)} mph`,
     'uv-value':finite(data.uv) === null ? '—' : data.uv.toFixed(1), 'uv-label':uvCategory(data.uv),
     'wind-status':c.gust === null ? 'Gust data unavailable' : c.gust >= 25 ? '≋ Gusty at times' : c.wind !== null && c.wind < 1 ? 'Calm' : '≋ No strong gusts',
     'date':localTime(c.time,{weekday:'short',month:'short',day:'2-digit'}).toUpperCase(), clock:clockTime(c.time),
@@ -89,9 +90,9 @@ function renderWeather(data) {
   $('condition-backdrop').innerHTML = conditionBackdrop(mode, c.isDay && c.code <= 2);
   $('landscape').innerHTML = landscape(mode, palette, c.isDay && c.code <= 2);
   $('landscape').setAttribute('aria-label', `Pixel art: ${view.label.toLowerCase()} over Lake Washington`);
-  $('hourly').innerHTML = hours.map((hour,i) => `<div class="hour"><span class="time">${i === 0 ? 'NOW' : localTime(hour.time,{hour:'numeric'}).replace(' ','')}</span>${icon(condition(hour.code,hour.isDay).icon)}<span class="hour-temp">${rounded(hour.temp)}°</span><span class="rain-chance" aria-label="${rounded(hour.chance)} percent chance of precipitation">${rounded(hour.chance)}%</span></div>`).join('');
+  $('hourly').innerHTML = hours.map((hour,i) => `<div class="hour"><span class="time">${i === 0 && !saved ? 'NOW' : localTime(hour.time,{hour:'numeric'}).replace(' ','')}</span>${icon(condition(hour.code,hour.isDay).icon)}<span class="hour-temp">${rounded(hour.temp)}°</span><span class="rain-chance" aria-label="${rounded(hour.chance)} percent chance of precipitation">${rounded(hour.chance)}%</span></div>`).join('');
   $('daily').innerHTML = days.map((day,i) => {
-    const name = i === 0 ? 'Today' : localTime(day.time,{weekday:'short'});
+    const name = i === 0 && !saved ? 'Today' : localTime(day.time,{weekday:'short'});
     return `<article class="day-card" aria-label="${name}: high ${rounded(day.high)}, low ${rounded(day.low)} degrees Fahrenheit, ${rounded(day.chance)} percent chance of precipitation"><h3>${name}</h3>${icon(condition(day.code).icon)}<div class="day-temperatures"><span class="day-high">${rounded(day.high)}°</span><span class="day-low">${rounded(day.low)}°</span></div><span class="day-rain">${rounded(day.chance)}% precip</span></article>`;
   }).join('');
   for (const name of ['sunrise','sunset']) {
@@ -105,7 +106,7 @@ function renderAirQuality(data) {
   const value = finite(current?.us_aqi);
   const aqi = value !== null && value >= 0 ? Math.round(value) : null;
   const label = aqiCategory(aqi);
-  setValues({'aqi-value':rounded(aqi), 'aqi-label':label, 'aqi-note':aqi === null ? 'Air quality unavailable' : `US AQI model · ${clockTime(current.time)}`});
+  setValues({'aqi-value':rounded(aqi), 'aqi-label':label, 'aqi-note':aqi === null ? 'Air quality unavailable' : `${data?._cached ? 'Saved AQI' : 'US AQI model'} · ${data?._cached ? localTime(current.time,{month:'short',day:'numeric'}) + ' ' : ''}${clockTime(current.time)}`});
   const thresholds = [50,100,150,200,300];
   const level = aqi === null ? -1 : thresholds.findIndex(limit => aqi <= limit);
   document.querySelector('.aqi-meter').dataset.level = aqi === null ? -1 : level === -1 ? 5 : level;
@@ -128,9 +129,9 @@ async function loadWeather() {
     renderWeather(lastWeather);
     renderAirQuality(air.status === 'fulfilled' ? air.value : null);
     const age = Date.now() / 1000 - lastWeather.current.time;
-    $('data-status').textContent = age > 3 * 3600 ? 'OLDER FORECAST' : 'LIVE FORECAST';
-    $('updated').textContent = `Forecast valid ${clockTime(lastWeather.current.time)} · Pacific time`;
-    $('load-message').textContent = air.status === 'fulfilled' && finite(air.value?.current?.us_aqi) !== null ? 'Kirkland forecast updated.' : 'Weather updated. Air quality is unavailable; try refreshing.';
+    $('data-status').textContent = lastWeather.saved ? 'SAVED FORECAST' : age > 3 * 3600 ? 'OLDER FORECAST' : 'LIVE FORECAST';
+    $('updated').textContent = `Forecast valid ${localTime(lastWeather.current.time,{month:'short',day:'numeric',year:'numeric'})}, ${clockTime(lastWeather.current.time)} · Pacific time`;
+    $('load-message').textContent = lastWeather.saved ? 'Showing a saved forecast. Reconnect and refresh for current weather.' : air.status === 'fulfilled' && finite(air.value?.current?.us_aqi) !== null ? 'Kirkland forecast updated.' : 'Weather updated. Air quality is unavailable; try refreshing.';
   } else {
     $('data-status').textContent = 'UPDATE FAILED';
     $('load-message').textContent = lastWeather ? 'Could not refresh. Showing the previous forecast and its valid time.' : 'Could not load weather. Check your connection and try again.';

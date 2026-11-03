@@ -5,10 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#111b1b">
   <meta name="color-scheme" content="dark">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Weather">
   <meta name="description" content="A quiet, personal weather dashboard. Live Kirkland forecasts powered by Open-Meteo.">
   <title>Kirkland · Weather</title>
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./icons/apple-touch-180.png">
+  <script type="module" src="./pwa.mjs"></script>
   <link rel="stylesheet" href="./styles.css">
   <script type="module" src="./app.js"></script>
 </head>
@@ -40,23 +46,33 @@
       <div class="section-heading"><h2 id="daily-title">5-DAY OUTLOOK</h2><span>°F</span></div>
       <div class="daily-scroll" tabindex="0" role="region" aria-label="Five-day forecast; scroll horizontally for more days"><div class="daily-track" id="daily"></div></div>
     </section>
-    </section>
     <section class="section hourly-section" id="forecast" aria-labelledby="hourly-title">
       <div class="section-heading"><h2 id="hourly-title">NEXT 12 HOURS</h2><span>LOCAL TIME</span></div>
       <div class="hourly-scroll" tabindex="0" role="region" aria-label="12-hour forecast; scroll horizontally for more hours"><div class="hourly-track" id="hourly"></div></div>
-      <p class="scroll-hint">SWIPE TO SEE THE EVENING <span aria-hidden="true">→</span></p>
+    </section>
+    <dl class="sun-summary" aria-label="Sunrise and sunset times">
+      <div><dt>Sunrise</dt><dd id="sunrise">—</dd></div>
+      <div><dt>Sunset</dt><dd id="sunset">—</dd></div>
+    </dl>
     </section>
 
 
-    <section class="section sun-section" aria-labelledby="sun-title">
-      <div class="section-heading"><h2 id="sun-title">SUNRISE / SUNSET</h2><span data-icon="sun"></span></div>
-      <div class="sun-times"><div><span class="eyebrow">SUNRISE</span><p class="sun-time" id="sunrise">—</p></div><div class="sun-divider" aria-hidden="true"><span>↗</span><span>↘</span></div><div><span class="eyebrow">SUNSET</span><p class="sun-time" id="sunset">—</p></div></div>
-    </section>
+
+
     <footer class="app-footer"><span class="footer-logo" aria-hidden="true">▦</span><p>A small window into the weather.</p><span id="updated">KIRKLAND, WA · WAITING FOR FORECAST</span><p class="attribution">Weather: <a href="https://open-meteo.com/">Open-Meteo</a><br>Air quality: <a href="https://atmosphere.copernicus.eu/">CAMS</a> via <a href="https://open-meteo.com/en/docs/air-quality-api">Open-Meteo</a></p></footer>
     <aside class="live-controls" aria-label="Forecast status and refresh">
       <p id="load-message" role="status" aria-live="polite">Fetching Kirkland weather…</p>
       <button type="button" id="refresh">Refresh weather</button>
       <p class="data-explainer">Kirkland, WA 98034 · Pacific time<br>Precipitation card: highest hourly chance in the next 12 hours.<br>Weather and air quality are model estimates.</p>
+    </aside>
+    <aside class="pwa-controls" id="pwa-controls" aria-label="Install and update Weather">
+      <h2>ON YOUR HOME SCREEN</h2>
+      <p id="pwa-status" role="status" aria-live="polite">Preparing Weather for your phone…</p>
+      <p id="install-help">In your phone’s browser, open the menu and choose Install app or Add to Home screen.</p>
+      <div class="pwa-actions">
+        <button type="button" id="install-app" hidden>Install Weather</button>
+        <button type="button" id="update-app" hidden>Update Weather</button>
+      </div>
     </aside>
   </main>
 </body>
