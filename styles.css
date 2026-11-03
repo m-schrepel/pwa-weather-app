@@ -46,3 +46,31 @@
 @media (min-width: 600px) { .weather-app { margin: 0 auto; border-top: 0; border-bottom: 0; } }
 @media (max-width: 350px) { .current { margin: 0 -18px; padding-left: 18px; padding-right: 18px; } .current .high-low { gap: 13px; } }
 @media (max-height: 600px) { .current .location-header { padding: 18px 0; } .current .temperature { height: 104px; font-size: 104px; } }
+
+/* Supporting conditions fit beneath the temperature in the opening scene. */
+.current .details-section {
+  flex-shrink: 0;
+  margin-top: 26px;
+}
+.current .details-section .section-heading { margin-bottom: 12px; }
+.current .metrics { border-color: #a4b6a54d; }
+.current .metric {
+  min-height: 114px;
+  padding: 12px;
+  background: #102020c9;
+  border-color: #a4b6a54d;
+}
+.current .metric-value { font-size: 28px; margin: 10px 0 6px; }
+.current .metric-note { min-height: 0; color: #bdcbb8; }
+.current .metric-label { color: #bdcbb8; }
+.current .meter,
+.current .segmented-meter { margin-top: 9px; }
+.current .wind-status { margin-top: 7px; }
+@media (max-height: 720px) {
+  .current .location-header { padding: 18px 0; }
+  .current .current-copy { padding-top: 0; }
+  .current .temperature { height: 104px; font-size: 104px; }
+  .current .details-section { margin-top: 20px; }
+  .current .metric { min-height: 102px; padding: 10px; }
+  .current .metric-value { margin-top: 7px; font-size: 26px; }
+}

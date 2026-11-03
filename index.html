@@ -27,6 +27,15 @@
         <div class="temperature"><span id="current-temp">54</span><span class="degree">°</span><span class="unit">F</span></div>
         <div class="high-low"><span>H <strong id="high">56°</strong></span><span>L <strong id="low">44°</strong></span><span class="feels">Feels like <strong id="feels">52°</strong></span></div>
       </div>
+    <section class="section details-section" aria-labelledby="details-title">
+      <div class="section-heading"><h2 id="details-title">A CLOSER LOOK</h2><span>TODAY</span></div>
+      <div class="metrics">
+        <article class="metric"><div class="metric-label"><span data-icon="rain"></span><h3>RAIN CHANCE</h3></div><p class="metric-value"><span id="rain-value">35</span><small>%</small></p><p class="metric-note" id="rain-note">A chance of rain this evening</p><div class="meter rain-meter"><span id="rain-meter"></span></div></article>
+        <article class="metric"><div class="metric-label"><span data-icon="wind"></span><h3>WIND & GUSTS</h3></div><p class="metric-value"><span id="wind-value">8</span><small>mph</small></p><p class="metric-note">SW · Gusts to <strong id="gust-value">16 mph</strong></p><div class="wind-status" id="wind-status">≋ A light breeze</div></article>
+        <article class="metric"><div class="metric-label"><span data-icon="sun"></span><h3>UV INDEX</h3></div><p class="metric-value"><span id="uv-value">1</span><small id="uv-label">LOW</small></p><p class="metric-note">Today's peak</p><div class="segmented-meter uv-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div></article>
+        <article class="metric"><div class="metric-label"><span data-icon="air"></span><h3>AIR QUALITY</h3></div><p class="metric-value">24<small>GOOD</small></p><p class="metric-note">US AQI · Current conditions</p><div class="segmented-meter aqi-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div></article>
+      </div>
+    </section>
     </section>
     <section class="section hourly-section" id="forecast" aria-labelledby="hourly-title">
       <div class="section-heading"><h2 id="hourly-title">NEXT 12 HOURS</h2><span>LOCAL TIME</span></div>
@@ -38,15 +47,7 @@
       <div class="forecast-key"><span>DAY / RAIN</span><span>LOW — HIGH</span></div>
       <div id="daily"></div>
     </section>
-    <section class="section details-section" aria-labelledby="details-title">
-      <div class="section-heading"><h2 id="details-title">A CLOSER LOOK</h2><span>TODAY</span></div>
-      <div class="metrics">
-        <article class="metric"><div class="metric-label"><span data-icon="rain"></span><h3>RAIN CHANCE</h3></div><p class="metric-value"><span id="rain-value">35</span><small>%</small></p><p class="metric-note" id="rain-note">A chance of rain this evening</p><div class="meter rain-meter"><span id="rain-meter"></span></div></article>
-        <article class="metric"><div class="metric-label"><span data-icon="wind"></span><h3>WIND & GUSTS</h3></div><p class="metric-value"><span id="wind-value">8</span><small>mph</small></p><p class="metric-note">SW · Gusts to <strong id="gust-value">16 mph</strong></p><div class="wind-status" id="wind-status">≋ A light breeze</div></article>
-        <article class="metric"><div class="metric-label"><span data-icon="sun"></span><h3>UV INDEX</h3></div><p class="metric-value"><span id="uv-value">1</span><small id="uv-label">LOW</small></p><p class="metric-note">Today's peak</p><div class="segmented-meter uv-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div></article>
-        <article class="metric"><div class="metric-label"><span data-icon="air"></span><h3>AIR QUALITY</h3></div><p class="metric-value">24<small>GOOD</small></p><p class="metric-note">US AQI · Current conditions</p><div class="segmented-meter aqi-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div></article>
-      </div>
-    </section>
+
     <section class="section sun-section" aria-labelledby="sun-title">
       <div class="section-heading"><h2 id="sun-title">SUNRISE / SUNSET</h2><span data-icon="sun"></span></div>
       <div class="sun-times"><div><span class="eyebrow">SUNRISE</span><p>6:55<small>AM</small></p></div><div class="sun-divider" aria-hidden="true"><span>↗</span><span>↘</span></div><div><span class="eyebrow">SUNSET</span><p>4:47<small>PM</small></p></div></div>
