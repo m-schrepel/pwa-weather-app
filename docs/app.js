@@ -49,13 +49,11 @@ function renderWeather(data) {
   const view = condition(c.code, c.isDay), mode = view.scene;
   const saved = data.saved || Date.now() / 1000 - c.time > 3 * 3600;
   document.querySelector('main').dataset.weather = mode;
-  document.querySelector('.date-stamp').setAttribute('title', 'Forecast valid time · Pacific time');
   setValues({
     'current-title':view.label, 'current-temp':rounded(c.temp), high:`${rounded(days[0].high)}°`, low:`${rounded(days[0].low)}°`, feels:`${rounded(c.feels)}°`,
     'rain-value':rounded(outlook.chance), 'rain-note':saved ? `Saved: ${outlook.note.toLowerCase()}` : outlook.note, 'wind-value':rounded(c.wind), 'wind-direction':c.direction, 'gust-value':`${rounded(c.gust)} mph`,
     'uv-value':finite(data.uv) === null ? '—' : data.uv.toFixed(1), 'uv-label':uvCategory(data.uv),
     'wind-status':c.gust === null ? 'Gust data unavailable' : c.gust >= 25 ? '≋ Gusty at times' : c.wind !== null && c.wind < 1 ? 'Calm' : '≋ No strong gusts',
-    'date':localTime(c.time,{weekday:'short',month:'short',day:'2-digit'}).toUpperCase(), clock:clockTime(c.time),
   });
   $('rain-meter').style.width = `${outlook.chance ?? 0}%`;
   $('rain-card').title = 'Maximum hourly precipitation probability in the next 12 hours';
@@ -104,12 +102,12 @@ async function loadWeather() {
     const age = Date.now() / 1000 - lastWeather.current.time;
     $('data-status').textContent = lastWeather.saved ? 'SAVED FORECAST' : age > 3 * 3600 ? 'OLDER FORECAST' : 'LIVE FORECAST';
     const validTime = `Forecast valid ${localTime(lastWeather.current.time,{month:'short',day:'numeric',year:'numeric'})}, ${clockTime(lastWeather.current.time)} · Pacific time`;
-    document.querySelector('.date-stamp').title = validTime;
-    document.querySelector('.date-stamp').setAttribute('aria-label', validTime);
+    $('data-status').title = validTime;
+    $('data-status').setAttribute('aria-label', `${$('data-status').textContent}. ${validTime}`);
     $('load-message').textContent = lastWeather.saved ? 'Showing a saved forecast. Updates resume when connected.' : air.status === 'fulfilled' && finite(air.value?.current?.us_aqi) !== null ? 'Kirkland forecast updated.' : 'Weather updated. Air quality is unavailable; retrying automatically.';
   } else {
     $('data-status').textContent = 'UPDATE FAILED';
-    $('load-message').textContent = lastWeather ? 'Could not refresh. Showing the previous forecast and its valid time.' : 'Could not load weather. Updates will retry automatically.';
+    $('load-message').textContent = lastWeather ? 'Could not refresh. Showing the previous forecast.' : 'Could not load weather. Updates will retry automatically.';
     if (!lastWeather) {
       $('current-title').textContent = 'Weather unavailable';
       $('hourly').textContent = 'Hourly forecast unavailable.';
