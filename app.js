@@ -1,10 +1,10 @@
 // All data in this prototype is illustrative. No network or location requests.
 const $ = (id) => document.getElementById(id);
 const scenarios = {
-  cloudy: {label:'Mostly cloudy',temp:54,high:56,low:44,feels:52,rain:35,wind:8,gust:16,uv:1,uvLabel:'LOW',caption:'A little cloud cover. A slower afternoon.',note:'A chance of rain this evening',sky:'#3b5350',horizon:'#5c7461',description:'a cloudy afternoon',hours:[54,54,53,51,50,49,48,47,47,46,45,44]},
-  rain: {label:'Rain showers',temp:49,high:52,low:43,feels:45,rain:85,wind:14,gust:28,uv:1,uvLabel:'LOW',caption:'Rain on the lake. Wind in the evergreens.',note:'Showers through the afternoon',sky:'#283c43',horizon:'#47615e',description:'a rainy afternoon',hours:[49,49,48,48,47,46,46,45,44,44,43,43]},
-  clear: {label:'Clear skies',temp:58,high:60,low:45,feels:58,rain:5,wind:4,gust:9,uv:2,uvLabel:'LOW',caption:'A clear sky, all the way to the mountains.',note:'Mostly dry through tonight',sky:'#526b61',horizon:'#9d9f70',description:'a sunny afternoon',hours:[58,59,58,56,53,51,49,48,47,46,45,45]},
-  night: {label:'Clear night',temp:45,high:56,low:44,feels:43,rain:10,wind:3,gust:7,uv:1,uvLabel:'LOW',caption:'The lake is quiet. The stars are out.',note:'A mostly dry night ahead',sky:'#1b2936',horizon:'#37495a',description:'a starry night',hours:[45,45,44,44,44,44,45,46,48,50,52,53]}
+  cloudy: {label:'Mostly cloudy',temp:54,high:56,low:44,feels:52,rain:35,wind:8,gust:16,uv:1,uvLabel:'LOW',note:'A chance of rain this evening',sky:'#3b5350',horizon:'#5c7461',description:'a cloudy afternoon',hours:[54,54,53,51,50,49,48,47,47,46,45,44]},
+  rain: {label:'Rain showers',temp:49,high:52,low:43,feels:45,rain:85,wind:14,gust:28,uv:1,uvLabel:'LOW',note:'Showers through the afternoon',sky:'#283c43',horizon:'#47615e',description:'a rainy afternoon',hours:[49,49,48,48,47,46,46,45,44,44,43,43]},
+  clear: {label:'Clear skies',temp:58,high:60,low:45,feels:58,rain:5,wind:4,gust:9,uv:2,uvLabel:'LOW',note:'Mostly dry through tonight',sky:'#526b61',horizon:'#9d9f70',description:'a sunny afternoon',hours:[58,59,58,56,53,51,49,48,47,46,45,45]},
+  night: {label:'Clear night',temp:45,high:56,low:44,feels:43,rain:10,wind:3,gust:7,uv:1,uvLabel:'LOW',note:'A mostly dry night ahead',sky:'#1b2936',horizon:'#37495a',description:'a starry night',hours:[45,45,44,44,44,44,45,46,48,50,52,53]}
 };
 
 function icon(type) {
@@ -44,7 +44,7 @@ function render(mode) {
   if (!Object.hasOwn(scenarios,mode)) return;
   const s=scenarios[mode];
   document.querySelector('main').dataset.weather=mode;
-  const values={'current-title':s.label,'current-temp':s.temp,high:`${s.high}°`,low:`${s.low}°`,feels:`${s.feels}°`,'scene-caption':s.caption,'rain-value':s.rain,'rain-note':s.note,'wind-value':s.wind,'gust-value':`${s.gust} mph`,'uv-value':s.uv,'uv-label':s.uvLabel,'wind-status':s.gust>=25?'≋ Gusty at times':'≋ A light breeze',clock:mode==='night'?'9:24 PM':'2:24 PM'};
+  const values={'current-title':s.label,'current-temp':s.temp,high:`${s.high}°`,low:`${s.low}°`,feels:`${s.feels}°`,'rain-value':s.rain,'rain-note':s.note,'wind-value':s.wind,'gust-value':`${s.gust} mph`,'uv-value':s.uv,'uv-label':s.uvLabel,'wind-status':s.gust>=25?'≋ Gusty at times':'≋ A light breeze',clock:mode==='night'?'9:24 PM':'2:24 PM'};
   for (const [id,value] of Object.entries(values)) $(id).textContent=value;
   $('rain-meter').style.width=`${s.rain}%`;
   $('landscape').innerHTML=landscape(mode,s);
