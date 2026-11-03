@@ -37,7 +37,7 @@ function landscape(mode, s) {
   for(let i=0;i<22;i++)water+=rect((i*47+13)%310,105+(i*11)%43,7+(i*13)%26,1,i%3?'#75988a':'#a2b49a');
   let rain='';
   if(mode==='rain')for(let i=0;i<40;i++)rain+=rect((i*37+17)%320,(i*19)%149,1,5,'#96b8bd');
-  return `<svg viewBox="0 0 320 155" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" aria-hidden="true">${rect(0,0,320,155,s.sky)}${rect(0,76,320,79,s.horizon)}${sky}${mountains}${rect(0,99,320,56,mode==='night'?'#2e494a':'#456b61')}${water}<path fill="#294c40" d="M0 92h27v7h23v7h37v6h29v8H0zM320 89h-22v8h-20v6h-24v7h-22v8h88z"/>${tree(-8,65,1.6)}${tree(12,80,1.1)}${tree(285,70,1.6)}${tree(269,85,1)}<path fill="#1b352d" d="M0 137h24v-5h24v6h22v5h31v12H0zM320 131h-18v7h-21v5h-24v12h63z"/>${rain}</svg>`;
+  return `<svg viewBox="0 0 320 680" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" aria-hidden="true">${rect(0,0,320,680,s.sky)}<g transform="translate(0 230)">${sky}</g><g transform="translate(0 470) scale(1 1.36)">${rect(0,76,320,79,s.horizon)}${mountains}${rect(0,99,320,56,mode==='night'?'#2e494a':'#456b61')}${water}<path fill="#294c40" d="M0 92h27v7h23v7h37v6h29v8H0zM320 89h-22v8h-20v6h-24v7h-22v8h88z"/>${tree(-8,65,1.6)}${tree(12,80,1.1)}${tree(285,70,1.6)}${tree(269,85,1)}<path fill="#1b352d" d="M0 137h24v-5h24v6h22v5h31v12H0zM320 131h-18v7h-21v5h-24v12h63z"/>${rain}</g></svg>`;
 }
 
 function render(mode) {
