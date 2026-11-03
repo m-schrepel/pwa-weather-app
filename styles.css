@@ -191,3 +191,9 @@
 .credits a { color: inherit; text-underline-offset: 2px; }
 
 @media (max-height: 740px) { .current { padding-bottom: max(4px, env(safe-area-inset-bottom)); } }
+
+/* Keep only the forecast timestamp above current conditions. */
+.forecast-header { display: flex; justify-content: flex-end; padding: 12px 0; flex-shrink: 0; }
+.forecast-header .date-stamp { display: flex; gap: 12px; }
+.current .condition { letter-spacing: normal; }
+@media (max-height: 740px) { .forecast-header { padding: 8px 0; } }
