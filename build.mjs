@@ -5,6 +5,7 @@ const assets = [
   'index.html',
   'styles.css',
   'app.js',
+  'weather.mjs',
   'manifest.webmanifest',
   'icon.svg',
 ];

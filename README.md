@@ -1,35 +1,41 @@
-# Weather / LCD prototype
+# Weather / LCD
 
-A phone-first, ad-free weather PWA for a Samsung Galaxy S24. This first version is a **local design prototype with illustrative Kirkland, WA data**, not a live forecast.
+A phone-first, ad-free weather dashboard for a Samsung Galaxy S24, using live Open-Meteo weather and modeled air quality for **Kirkland, WA 98034**.
 
 ## Preview locally
 
-Run `python3 -m http.server 4173 --bind 127.0.0.1` from this directory, then open http://127.0.0.1:4173.
+Run `python3 -m http.server 4173 --bind 127.0.0.1` from this directory, then open http://127.0.0.1:4173. An HTTP server is required for browser ES modules.
 
-No dependencies, compilation requirement, API keys, accounts, or external fonts. The condition buttons at the bottom compare cloudy, rainy, clear, and nighttime scenes using sample data.
+No third-party dependencies, API keys, accounts, or external fonts. The browser calls Open-Meteo directly over HTTPS. Refresh the page or use **Refresh weather** below the forecast to fetch new data. This version uses fixed Kirkland coordinates (47.716, -122.211); device geolocation is a later step.
 
 ## Static output and GitHub Pages
 
-Run `node build.mjs` to refresh the standalone output in `docs/`. It contains the HTML, CSS, JavaScript, manifest, icon, and `.nojekyll` file, with relative paths so it works under a GitHub Pages repository URL. Commit the refreshed output whenever changing the root source files. You can preview it locally at http://127.0.0.1:4173/docs/.
+Run `node build.mjs` to refresh the standalone output in `docs/`, including `weather.mjs`. Commit the refreshed output whenever changing source. All asset/module paths are relative, so the site works under a GitHub Pages repository URL. Preview the packaged output at http://127.0.0.1:4173/docs/.
 
-After merging into `main`, select **Settings → Pages → Deploy from a branch → main → /docs → Save**. GitHub Pages serves the contents of `docs/` at https://m-schrepel.github.io/pwa-weather-app/.
+After merging into `main`, select **Settings → Pages → Deploy from a branch → main → /docs → Save**. GitHub Pages serves `docs/` at https://m-schrepel.github.io/pwa-weather-app/.
 
-No deployment workflow is required. `.nojekyll` disables Jekyll processing. Publishing is left to the repository owner; this change does not enable Pages.
+No deployment workflow is required. `.nojekyll` disables Jekyll processing. These source changes do not change Pages settings or publish automatically until merged into the configured publishing branch.
 
-## Design brief
+## Data and behavior
 
-- Phone only, primarily Galaxy S24; dark LCD/pixel style.
-- A full-screen pixel weather scene with current conditions, today's high/low, and feels-like overlaid on the image; scroll for the forecast.
-- A horizontal five-day forecast directly below the first-screen detail cards; the next 12 hours further down the scrolling page.
-- Compact rain chance, wind/gusts, UV, and US AQI cards directly beneath current weather on the first screen; sunrise and sunset further down.
-- Future live version: current location, Kirkland (98034) fallback, Fahrenheit, mph, local time, no settings.
-- No ads, analytics, login, radar, alerts, or offline requirement.
-- Weather-dependent backgrounds; refine visuals after approving layout.
+- Current conditions, feels-like, wind/gusts: Open-Meteo current model values; Fahrenheit and mph.
+- Five daily forecasts: high/low, weather code, maximum precipitation probability.
+- Twelve hourly slots: the current forecast hour and the next eleven, with their own weather icons and precipitation probabilities.
+- Precipitation card: **maximum hourly probability in those twelve slots**, not an independently calculated twelve-hour event probability. Summary thresholds: below 20% means mostly dry, 20–49% possible, 50%+ likely. The first contiguous period meeting the threshold determines approximate timing. Snow codes change the summary to snow. Missing probabilities never produce a dry-weather claim.
+- UV: today's forecast maximum, with category thresholds 3/6/8/11.
+- AQI: current modeled US AQI from CAMS via Open-Meteo, labeled with its own valid time; not a local monitoring-station observation. Missing air quality does not block the weather.
+- Sunrise/sunset and all dates/times use Pacific time. API epoch timestamps are formatted with `America/Los_Angeles` for DST-aware display.
+- Requests time out after 12 seconds. First-load failures show dashes and a retry control, never sample weather. Failed refreshes retain the previous forecast with an explicit update-failed message and its valid time. A forecast older than three hours is labeled older.
+- Pixel weather scenes follow current conditions; no sun is drawn for overcast skies. Snow, fog, and thunderstorm icons are supported.
 
-## Status
+Weather attribution: [Open-Meteo](https://open-meteo.com/). Air-quality attribution: [CAMS](https://atmosphere.copernicus.eu/) via [Open-Meteo](https://open-meteo.com/en/docs/air-quality-api). Visible attribution is included in the app.
 
-Nothing is deployed. GitHub Pages is intentionally not enabled. A web app manifest and SVG icon provide groundwork; phone installation and live data integration are later milestones. No service worker is registered, avoiding stale prototype assets.
+## Design and scope
 
-## Next steps
+Dark LCD/pixel style; a full-screen lake scene with current weather, detail cards, and a horizontally scrolling five-day forecast. Hourly weather and sunrise/sunset follow below. On short screens the opening section grows to avoid clipping data.
 
-Review the phone layout, refine artwork, connect forecast and air-quality data with attribution/error states, add geolocation, verify Android installation, then publish only when requested.
+No ads, analytics, login, settings screen, radar, alerts, or offline requirement. No service worker is registered. A manifest and SVG icon provide PWA groundwork; Android installation still needs verification and production-size raster icons.
+
+## Verification
+
+Run `node --test weather.test.mjs`. Tests cover rain timing across midnight, missing values, probability thresholds, AQI/UV categories, condition codes, hourly selection, DST, request units, and HTTP errors. With no third-party packages there are no npm dependencies to audit.
