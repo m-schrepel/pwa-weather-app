@@ -19,6 +19,31 @@ function icon(type) {
   return `<svg class="weather-icon" viewBox="0 0 24 24" aria-hidden="true" shape-rendering="crispEdges">${paths[type] || paths.cloud}</svg>`;
 }
 
+// A wide condition illustration behind the temperature; text supplies its label.
+function conditionBackdrop(mode) {
+  const cloud = (x, y, fill) => `<path fill="${fill}" d="M${x} ${y+24}h16V${y+12}h24V${y}h46v12h25v12h18v14h14v27H${x}z"/>`;
+  let art = '';
+  if (mode === 'night') {
+    art = '<path fill="#b6c7a6" d="M251 18h28v9h-19v37h19v9h-28v-9h-9V27h9z"/>';
+    for (const [x,y] of [[157,22],[192,68],[296,35],[220,105],[121,91],[280,127]]) {
+      art += `<path fill="#a8c2b5" d="M${x} ${y}h4v4h-4z"/>`;
+    }
+    art += cloud(25,107,'#3b5256');
+  } else if (mode === 'clear') {
+    art = '<g fill="#c1ad72"><path d="M232 28h40v40h-40zM244 10h16v10h-16zM244 76h16v10h-16zM214 40h10v16h-10zM280 40h10v16h-10zM220 16h8v8h-8zM276 16h8v8h-8zM220 72h8v8h-8zM276 72h8v8h-8z"/></g>';
+    art += cloud(38,100,'#536c60');
+  } else {
+    if (mode === 'cloudy') art += '<path fill="#a99d69" d="M244 16h32v32h-32zM252 8h16v48h-16z"/>';
+    art += cloud(165,38,mode === 'rain' ? '#638284' : '#8c9e85');
+    art += cloud(53,88,mode === 'rain' ? '#4f6b71' : '#607e72');
+    art += cloud(-66,34,'#3f5c55');
+    if (mode === 'rain') {
+      for (let i=0; i<12; i++) art += `<path fill="#86abb4" d="M${135+i*14} ${119+(i%3)*11}h3v10h-3z"/>`;
+    }
+  }
+  return `<svg viewBox="0 0 320 170" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">${art}</svg>`;
+}
+
 function landscape(mode, s) {
   const rect = (x,y,w,h,c) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`;
   const tree = (x,y,size=1) => `<g transform="translate(${x} ${y}) scale(${size})" fill="#172e2b"><path d="M8 0h4v5h4v6h4v6h4v6H0v-6h4v-6h4z"/><path d="M10 20h4v13h-4z"/></g>`;
@@ -47,6 +72,7 @@ function render(mode) {
   const values={'current-title':s.label,'current-temp':s.temp,high:`${s.high}°`,low:`${s.low}°`,feels:`${s.feels}°`,'rain-value':s.rain,'rain-note':s.note,'wind-value':s.wind,'gust-value':`${s.gust} mph`,'uv-value':s.uv,'uv-label':s.uvLabel,'wind-status':s.gust>=25?'≋ Gusty at times':'≋ A light breeze',clock:mode==='night'?'9:24 PM':'2:24 PM'};
   for (const [id,value] of Object.entries(values)) $(id).textContent=value;
   $('rain-meter').style.width=`${s.rain}%`;
+  $('condition-backdrop').innerHTML=conditionBackdrop(mode);
   $('landscape').innerHTML=landscape(mode,s);
   $('landscape').setAttribute('aria-label',`Pixel art of ${s.description} over Lake Washington`);
   const start=mode==='night'?21:14;
