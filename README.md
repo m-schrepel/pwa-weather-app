@@ -26,7 +26,7 @@ No deployment workflow is required. `.nojekyll` disables Jekyll processing. Thes
 - AQI: current modeled US AQI from CAMS via Open-Meteo, labeled with its own valid time; not a local monitoring-station observation. Missing air quality does not block the weather.
 - Sunrise/sunset and all dates/times use Pacific time. API epoch timestamps are formatted with `America/Los_Angeles` for DST-aware display.
 - Requests time out after 12 seconds. Without a saved response, first-load failures show dashes and a retry control, never sample weather. When the service worker has a previously successful response, it uses that as an explicitly labeled saved forecast on network failure. Failed refreshes retain the previous forecast with an explicit update-failed message and its valid time. A forecast older than three hours is labeled older. Offline/cached weather is labeled SAVED FORECAST regardless of age, with its full valid date and time. Saved hourly/daily data never uses NOW/Today labels.
-- Pixel weather scenes follow current conditions; no sun is drawn for overcast skies. Snow, fog, and thunderstorm icons are supported.
+- Static pixel weather scenes follow current conditions through an explicit weather-code mapping. All 29 documented Open-Meteo codes are covered, including heavy thunderstorm code 97, with day/night variants and fallback art. Snow, fog, and thunderstorm icons are supported.
 
 Weather attribution: [Open-Meteo](https://open-meteo.com/). Air-quality attribution: [CAMS](https://atmosphere.copernicus.eu/) via [Open-Meteo](https://open-meteo.com/en/docs/air-quality-api). Visible attribution is included in the app.
 
@@ -38,7 +38,7 @@ No ads, analytics, login, settings screen, radar, alerts, or push notifications.
 
 ## Verification
 
-Run `node build.mjs`, then `node --test weather.test.mjs pwa.test.mjs`. Tests cover rain timing across midnight, missing values, probability thresholds, AQI/UV categories, condition codes, hourly selection, DST, request units, and HTTP errors. With no third-party packages there are no npm dependencies to audit.
+Run `node build.mjs`, then `node --test weather.test.mjs pwa.test.mjs backgrounds.test.mjs`. Tests cover rain timing across midnight, missing values, probability thresholds, AQI/UV categories, condition codes, hourly selection, DST, request units, and HTTP errors. With no third-party packages there are no npm dependencies to audit.
 
 ## Install on your S24
 
@@ -56,3 +56,15 @@ The manifest has relative ID/start/scope URLs, standard 192/512px PNG icons, and
 - GitHub Pages serves HTTPS in production; loopback HTTP works for local development. Root and `/docs/` local previews have separate worker/cache scopes. Actual Android installation and airplane-mode behavior still need a device check; worker logic has automated offline tests.
 
 Regenerate icons with `python3 scripts/generate-icons.py`, then rebuild. This reproduces the existing pixel icon using only Python’s standard library; no image-generation service or package installation is needed.
+
+## Weather background assets
+
+Review the library at http://127.0.0.1:4173/docs/backgrounds.html (or `/backgrounds.html` on the deployed site). The separate gallery filters by condition family and day/night; each card links directly to the SVG files. It is an art-review page rather than part of the phone dashboard’s navigation.
+
+`weather-scenes.mjs` is the shared condition catalog and asset resolver. `backgroundAssets(code, isDay)` returns allowlisted relative paths for a portrait lake scene and the wide temperature-strip backdrop. Unknown codes use neutral fallback assets. Each documented code has its own files, even when it shares a visual family with another intensity.
+
+`assets/weather/` contains **120 static SVGs**: 29 codes × two times of day × two formats, plus four fallback files. The set is about 585 KB uncompressed. Artwork retains the established pixel style and lake silhouette; precipitation density, frozen ground details, haze, lightning, and hail distinguish condition families and intensities. There are no animated flashes. Moon shapes and snow-covered banks are illustrative, not measured moon phases or snow depth.
+
+`node build.mjs` runs `scripts/generate-backgrounds.mjs`, packages all assets into `docs/assets/weather/`, and includes the full library in the versioned service-worker cache so alternate conditions work offline. You can also run `node scripts/generate-backgrounds.mjs` independently. To change art, edit the generator; to change code mappings, edit the shared catalog, then rebuild. No third-party packages or external image-generation services are used.
+
+Background tests verify all documented codes and both day/night variants resolve to existing files, generated source and docs agree, invalid inputs use fallback paths, sun/moon rules are respected, precipitation families have the appropriate layers, and every asset is available to the offline cache. All generated SVGs are also XML-parsed during validation.

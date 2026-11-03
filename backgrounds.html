@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Weather background library</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./gallery.css">
+  <script type="module" src="./gallery.mjs"></script>
+</head>
+<body>
+  <header>
+    <a href="./">← Weather</a>
+    <p class="eyebrow">PIXEL WEATHER / ASSET LIBRARY</p>
+    <h1>Every kind of sky.</h1>
+    <p class="intro">Static day and night art for every Open-Meteo weather code. Each pair includes a full-screen lake scene and a wide temperature backdrop.</p>
+    <div class="filters">
+      <label>Conditions<select id="family"><option value="all">All conditions</option><option value="sky">Clear & cloudy</option><option value="fog">Fog</option><option value="rain">Rain & drizzle</option><option value="ice">Freezing precipitation</option><option value="snow">Snow</option><option value="storm">Thunderstorms & hail</option><option value="unknown">Unknown / fallback</option></select></label>
+      <label>Time of day<select id="period"><option value="both">Day & night</option><option value="day">Day</option><option value="night">Night</option></select></label>
+    </div>
+    <p id="count" role="status" aria-live="polite"></p>
+  </header>
+  <main id="gallery" aria-label="Weather background asset gallery"></main>
+  <footer>Condition coverage: <a href="https://open-meteo.com/en/docs#weathervariables">Open-Meteo weather codes</a>. Art is illustrative; snow cover and moon shape are artistic, not observed ground conditions or a calculated moon phase.</footer>
+</body>
+</html>

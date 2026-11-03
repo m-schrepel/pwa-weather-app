@@ -1,11 +1,7 @@
+import { backgroundAssets } from './weather-scenes.mjs';
 import { finite, rounded, localTime, clockTime, condition, uvCategory, aqiCategory, normalizeForecast, weatherUrl, airQualityUrl, fetchJson } from './weather.mjs';
 const $ = (id) => document.getElementById(id);
-const palettes = {
-  cloudy: {sky:'#3b5350', horizon:'#5c7461'},
-  rain: {sky:'#283c43', horizon:'#47615e'},
-  clear: {sky:'#526b61', horizon:'#9d9f70'},
-  night: {sky:'#1b2936', horizon:'#37495a'},
-};
+
 
 function icon(type) {
   const paths = {
@@ -22,50 +18,27 @@ function icon(type) {
   return `<svg class="weather-icon" viewBox="0 0 24 24" aria-hidden="true" shape-rendering="crispEdges">${paths[type] || paths.cloud}</svg>`;
 }
 
-// A wide condition illustration behind the temperature; text supplies its label.
-function conditionBackdrop(mode, isDay = true) {
-  const cloud = (x, y, fill) => `<path fill="${fill}" d="M${x} ${y+24}h16V${y+12}h24V${y}h46v12h25v12h18v14h14v27H${x}z"/>`;
-  let art = '';
-  if (mode === 'night') {
-    art = '<path fill="#b6c7a6" d="M251 18h28v9h-19v37h19v9h-28v-9h-9V27h9z"/>';
-    for (const [x,y] of [[157,22],[192,68],[296,35],[220,105],[121,91],[280,127]]) {
-      art += `<path fill="#a8c2b5" d="M${x} ${y}h4v4h-4z"/>`;
+// Only allowlisted, pre-generated local files can become image URLs.
+function renderBackgrounds(code, isDay) {
+  const paths = backgroundAssets(code, isDay);
+  const fallback = backgroundAssets(null, isDay);
+  for (const [id, key] of [['landscape','landscape'], ['condition-backdrop','temperature']]) {
+    const host = $(id);
+    let img = host.querySelector('img');
+    if (!img) {
+      img = document.createElement('img');
+      img.alt = '';
+      img.decoding = 'async';
+      host.replaceChildren(img);
     }
-    art += cloud(25,107,'#3b5256');
-  } else if (mode === 'clear') {
-    art = '<g fill="#c1ad72"><path d="M232 28h40v40h-40zM244 10h16v10h-16zM244 76h16v10h-16zM214 40h10v16h-10zM280 40h10v16h-10zM220 16h8v8h-8zM276 16h8v8h-8zM220 72h8v8h-8zM276 72h8v8h-8z"/></g>';
-    art += cloud(38,100,'#536c60');
-  } else {
-    if (mode === 'cloudy' && isDay) art += '<path fill="#a99d69" d="M244 16h32v32h-32zM252 8h16v48h-16z"/>';
-    art += cloud(165,38,mode === 'rain' ? '#638284' : '#8c9e85');
-    art += cloud(53,88,mode === 'rain' ? '#4f6b71' : '#607e72');
-    art += cloud(-66,34,'#3f5c55');
-    if (mode === 'rain') {
-      for (let i=0; i<12; i++) art += `<path fill="#86abb4" d="M${135+i*14} ${119+(i%3)*11}h3v10h-3z"/>`;
-    }
+    const url = new URL(paths[key], import.meta.url).href;
+    img.onerror = () => {
+      const backup = new URL(fallback[key], import.meta.url).href;
+      if (img.src !== backup) img.src = backup;
+      else img.remove();
+    };
+    if (img.src !== url) img.src = url;
   }
-  return `<svg viewBox="0 0 320 170" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">${art}</svg>`;
-}
-
-function landscape(mode, s, isDay = true) {
-  const rect = (x,y,w,h,c) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`;
-  const tree = (x,y,size=1) => `<g transform="translate(${x} ${y}) scale(${size})" fill="#172e2b"><path d="M8 0h4v5h4v6h4v6h4v6H0v-6h4v-6h4z"/><path d="M10 20h4v13h-4z"/></g>`;
-  const cloud = (x,y,w,color) => `<path fill="${color}" d="M${x} ${y+6}h12v-6h${w-32}v6h14v6h10v10h-${w+4}V${y+12}h8z"/>`;
-  let sky = '';
-  if(mode==='night') {
-    for(const [x,y] of [[16,15],[41,33],[73,11],[102,29],[144,15],[178,35],[218,18],[284,12],[302,41],[237,44]])sky+=rect(x,y,2,2,'#a4bdaf');
-    sky+='<path fill="#d6dfb9" d="M255 16h14v5h-9v17h9v5h-15v-5h-5V21h6z"/>';
-  } else {
-    if(isDay && (mode==='clear'||mode==='cloudy'))sky+=rect(237,22,24,24,mode==='clear'?'#dbc58b':'#abb38b')+rect(242,17,14,34,mode==='clear'?'#dbc58b':'#abb38b');
-    if(mode!=='clear')sky+=cloud(26,20,85,mode==='rain'?'#708886':'#94a391')+cloud(172,43,100,mode==='rain'?'#607b79':'#8c9d8a')+cloud(-17,58,74,'#748d7e');
-    else sky+=cloud(30,30,56,'#b4b899')+cloud(163,57,40,'#a3ae8b');
-  }
-  const mountains='<path d="M0 98V84h18v-6h19V68h22v8h16v9h24v-7h16V65h17v-8h17v11h17v8h20v10h19V75h19V61h17V48h12v8h12v12h16v11h22v9h17v10z" fill="'+(mode==='night'?'#40585c':'#809586')+'"/><path d="M237 61h8V48h12v8h12v12h-12v-7h-8v6h-12z" fill="'+(mode==='night'?'#829794':'#c1c9a9')+'"/>';
-  let water='';
-  for(let i=0;i<22;i++)water+=rect((i*47+13)%310,105+(i*11)%43,7+(i*13)%26,1,i%3?'#75988a':'#a2b49a');
-  let rain='';
-  if(mode==='rain')for(let i=0;i<40;i++)rain+=rect((i*37+17)%320,(i*19)%149,1,5,'#96b8bd');
-  return `<svg viewBox="0 0 320 680" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" aria-hidden="true">${rect(0,0,320,680,s.sky)}<g transform="translate(0 230)">${sky}</g><g transform="translate(0 470) scale(1 1.36)">${rect(0,76,320,79,s.horizon)}${mountains}${rect(0,99,320,56,mode==='night'?'#2e494a':'#456b61')}${water}<path fill="#294c40" d="M0 92h27v7h23v7h37v6h29v8H0zM320 89h-22v8h-20v6h-24v7h-22v8h88z"/>${tree(-8,65,1.6)}${tree(12,80,1.1)}${tree(285,70,1.6)}${tree(269,85,1)}<path fill="#1b352d" d="M0 137h24v-5h24v6h22v5h31v12H0zM320 131h-18v7h-21v5h-24v12h63z"/>${rain}</g></svg>`;
 }
 
 function setValues(values) {
@@ -75,7 +48,6 @@ function renderWeather(data) {
   const {current:c, hours, days, outlook} = data;
   const view = condition(c.code, c.isDay), mode = view.scene;
   const saved = data.saved || Date.now() / 1000 - c.time > 3 * 3600;
-  const palette = c.isDay ? palettes[mode] : palettes.night;
   document.querySelector('main').dataset.weather = mode;
   document.querySelector('.date-stamp').setAttribute('title', 'Forecast valid time · Pacific time');
   setValues({
@@ -87,8 +59,7 @@ function renderWeather(data) {
   });
   $('rain-meter').style.width = `${outlook.chance ?? 0}%`;
   $('rain-card').title = 'Maximum hourly precipitation probability in the next 12 hours';
-  $('condition-backdrop').innerHTML = conditionBackdrop(mode, c.isDay && c.code <= 2);
-  $('landscape').innerHTML = landscape(mode, palette, c.isDay && c.code <= 2);
+  renderBackgrounds(c.code, c.isDay);
   $('landscape').setAttribute('aria-label', `Pixel art: ${view.label.toLowerCase()} over Lake Washington`);
   $('hourly').innerHTML = hours.map((hour,i) => `<div class="hour"><span class="time">${i === 0 && !saved ? 'NOW' : localTime(hour.time,{hour:'numeric'}).replace(' ','')}</span>${icon(condition(hour.code,hour.isDay).icon)}<span class="hour-temp">${rounded(hour.temp)}°</span><span class="rain-chance" aria-label="${rounded(hour.chance)} percent chance of precipitation">${rounded(hour.chance)}%</span></div>`).join('');
   $('daily').innerHTML = days.map((day,i) => {

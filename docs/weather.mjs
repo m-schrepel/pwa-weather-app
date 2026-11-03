@@ -1,3 +1,4 @@
+import { WEATHER_BY_CODE } from './weather-scenes.mjs';
 // Open-Meteo requests use Fahrenheit, mph, inches, and UTC epoch timestamps.
 export const LOCATION = Object.freeze({ latitude: 47.716, longitude: -122.211, timezone: 'America/Los_Angeles' });
 export const finite = value => typeof value === 'number' && Number.isFinite(value) ? value : null;
@@ -9,13 +10,13 @@ export function localTime(time, options = {}) {
 export const clockTime = time => localTime(time, { hour: 'numeric', minute: '2-digit' });
 
 export function condition(code, isDay = true) {
-  const labels = { 0:'Clear skies', 1:'Mostly clear', 2:'Partly cloudy', 3:'Overcast', 45:'Foggy', 48:'Freezing fog', 51:'Light drizzle', 53:'Drizzle', 55:'Heavy drizzle', 56:'Freezing drizzle', 57:'Freezing drizzle', 61:'Light rain', 63:'Rain', 65:'Heavy rain', 66:'Freezing rain', 67:'Freezing rain', 71:'Light snow', 73:'Snow', 75:'Heavy snow', 77:'Snow grains', 80:'Light rain showers', 81:'Rain showers', 82:'Heavy rain showers', 85:'Snow showers', 86:'Heavy snow showers', 95:'Thunderstorm', 96:'Thunderstorm with hail', 99:'Thunderstorm with hail' };
-  if (!Object.hasOwn(labels, code)) return {label:'Conditions unavailable', icon:'cloud', scene:'cloudy', snowy:false};
-  const snowy = [71,73,75,77,85,86].includes(code);
-  const wet = [51,53,55,56,57,61,63,65,66,67,80,81,82,95,96,99].includes(code);
+  const item = typeof code === 'number' ? WEATHER_BY_CODE[code] : null;
+  if (!item) return {label:'Conditions unavailable', icon:'cloud', scene:'cloudy', snowy:false};
+  const snowy = item.icon === 'snow';
+  const wet = item.icon === 'rain' || item.icon === 'storm';
   return {
-    label: !isDay && (code === 0 || code === 1) ? 'Clear night' : labels[code] || 'Conditions unavailable',
-    icon: snowy ? 'snow' : code >= 95 ? 'storm' : wet ? 'rain' : code === 45 || code === 48 ? 'fog' : code <= 1 ? (isDay ? 'sun' : 'moon') : 'cloud',
+    label: !isDay && (code === 0 || code === 1) ? 'Clear night' : item.label,
+    icon: code <= 1 && !isDay ? 'moon' : item.icon,
     scene: wet ? 'rain' : code <= 1 ? (isDay ? 'clear' : 'night') : 'cloudy',
     snowy,
   };
