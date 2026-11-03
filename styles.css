@@ -115,7 +115,7 @@
 .segmented-meter[data-level="2"] i:nth-child(3) { background: #dca06a !important; }
 .segmented-meter[data-level="3"] i:nth-child(4) { background: #db7e72 !important; }
 .segmented-meter[data-level="4"] i:nth-child(5), .segmented-meter[data-level="5"] i:nth-child(5) { background: #c28aba !important; }
-@media (max-height: 740px) { .current { height: auto; min-height: 100svh; padding-bottom: 18px; } }
+@media (max-height: 779px) { .current { height: auto; min-height: 100svh; padding-bottom: 18px; } }
 
 [hidden] { display: none !important; }
 
@@ -150,7 +150,7 @@
 .sun-summary div { display: flex; gap: 8px; align-items: baseline; }
 .sun-summary dt { color: #bdcbb8; }
 .sun-summary dd { margin: 0; color: var(--ink); white-space: nowrap; }
-@media (max-height: 740px) {
+@media (max-height: 779px) {
   .current .location-header { padding: 10px 0; }
   .current .temperature { height: 76px; font-size: 76px; }
   .current .degree { font-size: 45px; }
@@ -162,7 +162,7 @@
   .sun-summary { margin-top: 8px; padding-top: 9px; }
 }
 @media (max-width: 350px) { .sun-summary { font-size: 10px; gap: 8px; } .sun-summary div { gap: 5px; } }
-@media (max-height: 740px) {
+@media (max-height: 779px) {
   .current .location-header { padding: 6px 0; }
   .current .temperature { height: 72px; font-size: 72px; }
   .current .details-section, .current .daily-section, .current .hourly-section { margin-top: 8px; }
@@ -176,7 +176,7 @@
 .sun-summary div:last-child { align-items: flex-end; }
 .sun-summary dt { font-size: 11px; line-height: 1; }
 .sun-summary dd { font-size: 26px; line-height: 1; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
-@media (max-height: 740px) {
+@media (max-height: 779px) {
   .sun-summary { margin-top: 5px; padding-top: 5px; }
   .sun-summary dt { font-size: 10px; }
   .sun-summary dd { font-size: 22px; }
@@ -190,6 +190,51 @@
 .status-bar .credits { margin-left: auto; font-size: 8px; letter-spacing: 0; white-space: nowrap; }
 .credits a { color: inherit; text-underline-offset: 2px; }
 
-@media (max-height: 740px) { .current { padding-bottom: max(4px, env(safe-area-inset-bottom)); } }
+@media (max-height: 779px) { .current { padding-bottom: max(4px, env(safe-area-inset-bottom)); } }
 
 .current .condition { letter-spacing: normal; }
+
+/* Use the space freed by the location and timestamp rows for readable weather. */
+.current .current-copy { padding-top: 10px; }
+.current .condition { font-size: 15px; }
+.current .temperature { height: 86px; font-size: 86px; }
+.current .metric-value { font-size: 27px; }
+.current .metric-label h3 { font-size: 9px; }
+.current .metric-note { font-size: 11px; }
+.current .wind-status { font-size: 10px; }
+.current .day-card .day-high { font-size: 19px; }
+.current .day-card .day-low { font-size: 13px; }
+.current .day-card .day-rain { font-size: 10px; }
+.current .hour .hour-temp { font-size: 19px; }
+.current .hour .rain-chance { font-size: 11px; }
+@media (min-height: 840px) {
+  .current .current-copy { padding-top: 10px; }
+  .current .condition { font-size: 16px; margin-bottom: 7px; }
+  .current .temperature { height: 100px; font-size: 100px; }
+  .current .degree { font-size: 60px; }
+  .current .high-low { font-size: 13px; }
+  .current .high-low .feels { font-size: 12px; }
+  .current .metric { min-height: 103px; padding: 11px; }
+  .current .metric-value { font-size: 30px; }
+  .current .metric-label .weather-icon { width: 16px; height: 16px; }
+  .current .section-heading h2 { font-size: 12px; }
+  .current .day-card { gap: 6px; padding: 8px 5px; }
+  .current .day-card .weather-icon { width: 27px; height: 27px; }
+  .current .day-card .day-high { font-size: 20px; }
+  .current .day-card .day-low { font-size: 14px; }
+  .current .hour { padding: 9px 0; gap: 9px; }
+  .current .hour .weather-icon { width: 24px; height: 24px; }
+  .current .hour .hour-temp { font-size: 20px; }
+  .sun-summary dd { font-size: 30px; }
+}
+
+@media (min-height: 780px) and (max-height: 839px) {
+  .current .temperature { height: 86px; font-size: 86px; }
+  .current .degree { font-size: 57px; }
+  .current .metric-value { font-size: 29px; }
+  .sun-summary dd { font-size: 28px; }
+}
+
+@media (min-height: 780px) and (max-height: 839px) {
+  .current .details-section, .current .daily-section, .current .hourly-section { margin-top: 10px; }
+}
