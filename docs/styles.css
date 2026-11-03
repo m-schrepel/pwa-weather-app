@@ -238,3 +238,8 @@
 @media (min-height: 780px) and (max-height: 839px) {
   .current .details-section, .current .daily-section, .current .hourly-section { margin-top: 10px; }
 }
+
+/* Let the softer daytime greens through while keeping the text area shaded. */
+.weather-app[data-period="day"] .current::before {
+  background: linear-gradient(180deg, #18312bd9 0%, #203c3299 30%, #284c3a33 53%, transparent 70%, #18312bb3 100%);
+}

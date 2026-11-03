@@ -49,6 +49,7 @@ function renderWeather(data) {
   const view = condition(c.code, c.isDay), mode = view.scene;
   const saved = data.saved || Date.now() / 1000 - c.time > 3 * 3600;
   document.querySelector('main').dataset.weather = mode;
+  document.querySelector('main').dataset.period = c.isDay ? 'day' : 'night';
   setValues({
     'current-title':view.label, 'current-temp':rounded(c.temp), high:`${rounded(days[0].high)}°`, low:`${rounded(days[0].low)}°`, feels:`${rounded(c.feels)}°`,
     'rain-value':rounded(outlook.chance), 'rain-note':saved ? `Saved: ${outlook.note.toLowerCase()}` : outlook.note, 'wind-value':rounded(c.wind), 'wind-direction':c.direction, 'gust-value':`${rounded(c.gust)} mph`,
