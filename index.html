@@ -23,7 +23,7 @@
   <main class="weather-app" data-weather="cloudy">
     <section class="current" aria-labelledby="current-title">
       <div class="landscape" id="landscape" role="img" aria-label="Pixel art of a cloudy afternoon over Lake Washington"></div>
-    <div class="preview-label"><span class="status-dot"></span><span id="data-status">LOADING WEATHER</span><span>KIRKLAND / WA</span></div>
+    <div class="status-bar"><span class="status-dot"></span><span id="data-status">LOADING WEATHER</span><span class="credits"><a href="https://open-meteo.com/" aria-label="Weather data by Open-Meteo">Open-Meteo</a> · <a href="https://atmosphere.copernicus.eu/" aria-label="Air quality data by CAMS via Open-Meteo">CAMS</a></span></div>
     <header class="location-header">
       <div><p class="eyebrow">WASHINGTON / 98034</p><h1>Kirkland<span class="location-mark" aria-hidden="true">⌖</span></h1></div>
       <div class="date-stamp"><span id="date">—</span><br><span id="clock">—</span></div>
@@ -55,25 +55,7 @@
       <div><dt>Sunset</dt><dd id="sunset">—</dd></div>
     </dl>
     </section>
-
-
-
-
-    <footer class="app-footer"><span class="footer-logo" aria-hidden="true">▦</span><p>A small window into the weather.</p><span id="updated">KIRKLAND, WA · WAITING FOR FORECAST</span><p class="attribution">Weather: <a href="https://open-meteo.com/">Open-Meteo</a><br>Air quality: <a href="https://atmosphere.copernicus.eu/">CAMS</a> via <a href="https://open-meteo.com/en/docs/air-quality-api">Open-Meteo</a></p></footer>
-    <aside class="live-controls" aria-label="Forecast status and refresh">
-      <p id="load-message" role="status" aria-live="polite">Fetching Kirkland weather…</p>
-      <button type="button" id="refresh">Refresh weather</button>
-      <p class="data-explainer">Kirkland, WA 98034 · Pacific time<br>Precipitation card: highest hourly chance in the next 12 hours.<br>Weather and air quality are model estimates.</p>
-    </aside>
-    <aside class="pwa-controls" id="pwa-controls" aria-label="Install and update Weather">
-      <h2>ON YOUR HOME SCREEN</h2>
-      <p id="pwa-status" role="status" aria-live="polite">Preparing Weather for your phone…</p>
-      <p id="install-help">In your phone’s browser, open the menu and choose Install app or Add to Home screen.</p>
-      <div class="pwa-actions">
-        <button type="button" id="install-app" hidden>Install Weather</button>
-        <button type="button" id="update-app" hidden>Update Weather</button>
-      </div>
-    </aside>
+    <p id="load-message" class="sr-only" role="status" aria-live="polite">Fetching Kirkland weather…</p>
   </main>
 </body>
 </html>

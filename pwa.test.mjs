@@ -93,3 +93,30 @@ test('the app receives the saved marker rather than treating fallback data as li
     const data=await fetchJson('https://api.open-meteo.com/v1/forecast');assert.equal(data._cached,true);assert.equal(normalizeForecast(data).saved,true);
   }finally{globalThis.fetch=original;}
 });
+
+async function appLifecycle({hidden=false,active=true,waiting=true}={}) {
+  const events = {window:new Map(),document:new Map(),worker:new Map()};
+  let reloads=0,messages=0,checks=0;
+  const registration={active:active?{}:null,waiting:waiting?{state:'installed',postMessage:()=>messages++}:null,update:async()=>{checks++;},addEventListener:()=>{}};
+  const document={hidden,addEventListener:(name,callback)=>events.document.set(name,callback)};
+  const window={isSecureContext:true,location:{reload:()=>reloads++},addEventListener:(name,callback)=>events.window.set(name,callback)};
+  const navigator={serviceWorker:{register:async()=>registration,addEventListener:(name,callback)=>events.worker.set(name,callback)}};
+  const script=(await readFile('pwa.mjs','utf8')).replaceAll('import.meta.url',JSON.stringify('https://example.com/pwa-weather-app/pwa.mjs'));
+  vm.runInNewContext(script,{document,window,navigator,URL,Date});
+  await events.window.get('load')();
+  return {document,events,registration,reloads:()=>reloads,messages:()=>messages,checks:()=>checks};
+}
+test('app updates wait for a hidden page and reload once when it returns',async()=>{
+  const app=await appLifecycle();
+  assert.equal(app.messages(),0);
+  app.events.worker.get('controllerchange')();assert.equal(app.reloads(),0);
+  app.document.hidden=true;app.events.document.get('visibilitychange')();assert.equal(app.messages(),1);
+  app.events.worker.get('controllerchange')();assert.equal(app.reloads(),0);
+  app.document.hidden=false;app.events.document.get('visibilitychange')();assert.equal(app.reloads(),1);
+  app.events.document.get('visibilitychange')();assert.equal(app.reloads(),1);
+});
+test('first installation does not reload, and a hidden existing app applies a waiting update',async()=>{
+  const first=await appLifecycle({hidden:true,active:false});
+  assert.equal(first.messages(),0);first.events.worker.get('controllerchange')();assert.equal(first.reloads(),0);
+  const update=await appLifecycle({hidden:true});assert.equal(update.messages(),1);
+});
