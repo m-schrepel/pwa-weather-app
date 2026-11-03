@@ -10,9 +10,9 @@ No dependencies, compilation requirement, API keys, accounts, or external fonts.
 
 ## Static output and GitHub Pages
 
-Run `node build.mjs` to refresh the standalone output in `html/`. It contains the HTML, CSS, JavaScript, manifest, icon, and `.nojekyll` file, with relative paths so it works under a GitHub Pages repository URL. Commit the refreshed output whenever changing the root source files. You can preview it locally at http://127.0.0.1:4173/html/.
+Run `node build.mjs` to refresh the standalone output in `docs/`. It contains the HTML, CSS, JavaScript, manifest, icon, and `.nojekyll` file, with relative paths so it works under a GitHub Pages repository URL. Commit the refreshed output whenever changing the root source files. You can preview it locally at http://127.0.0.1:4173/docs/.
 
-GitHub Pages branch publishing only supports `/ (root)` or `/docs` as its source folder, not `/html`. The root source is already a complete static site, so after merging into `main`, select **Settings → Pages → Deploy from a branch → main → / (root) → Save**. The app will be available at https://m-schrepel.github.io/pwa-weather-app/ and the packaged copy at https://m-schrepel.github.io/pwa-weather-app/html/.
+After merging into `main`, select **Settings → Pages → Deploy from a branch → main → /docs → Save**. GitHub Pages serves the contents of `docs/` at https://m-schrepel.github.io/pwa-weather-app/.
 
 No deployment workflow is required. `.nojekyll` disables Jekyll processing. Publishing is left to the repository owner; this change does not enable Pages.
 
