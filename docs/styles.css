@@ -195,3 +195,7 @@
   .sun-summary dt { font-size: 10px; }
   .sun-summary dd { font-size: 22px; }
 }
+
+/* Background art is served from the static, code-mapped SVG asset library. */
+.landscape img, .condition-backdrop img { display: block; width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
+.condition-backdrop img { opacity: .8; }

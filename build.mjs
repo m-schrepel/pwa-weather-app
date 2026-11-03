@@ -1,9 +1,15 @@
 import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
+import { BACKGROUND_FILES } from './weather-scenes.mjs';
+import { generateBackgrounds } from './scripts/generate-backgrounds.mjs';
+
+await generateBackgrounds();
 
 const assets = [
   'index.html', 'styles.css', 'app.js', 'weather.mjs', 'pwa.mjs',
-  'manifest.webmanifest', 'icon.svg',
+  'manifest.webmanifest', 'icon.svg', 'weather-scenes.mjs',
+  'backgrounds.html', 'gallery.css', 'gallery.mjs',
+  ...BACKGROUND_FILES,
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png',
   'icons/apple-touch-180.png',
 ];
@@ -18,6 +24,7 @@ const worker = template.replace('__BUILD_VERSION__', hash.digest('hex').slice(0,
 await writeFile(new URL('sw.js', root), worker);
 await mkdir(new URL('icons/', output), {recursive:true});
 for (const asset of [...assets, 'sw.js']) {
+  await mkdir(new URL('./', new URL(asset, output)), {recursive:true});
   await copyFile(new URL(asset, root), new URL(asset, output));
 }
 await writeFile(new URL('.nojekyll', output), '');
