@@ -46,3 +46,81 @@
 @media (min-width: 600px) { .weather-app { margin: 0 auto; border-top: 0; border-bottom: 0; } }
 @media (max-width: 350px) { .current { margin: 0 -18px; padding-left: 18px; padding-right: 18px; } .current .high-low { gap: 13px; } }
 @media (max-height: 600px) { .current .location-header { padding: 18px 0; } .current .temperature { height: 104px; font-size: 104px; } }
+
+/* Supporting conditions fit beneath the temperature in the opening scene. */
+.current .details-section {
+  flex-shrink: 0;
+  margin-top: 26px;
+}
+.current .details-section .section-heading { margin-bottom: 12px; }
+.current .metrics { border-color: #a4b6a54d; }
+.current .metric {
+  min-height: 114px;
+  padding: 12px;
+  background: #102020c9;
+  border-color: #a4b6a54d;
+}
+.current .metric-value { font-size: 28px; margin: 10px 0 6px; }
+.current .metric-note { min-height: 0; color: #bdcbb8; }
+.current .metric-label { color: #bdcbb8; }
+.current .meter,
+.current .segmented-meter { margin-top: 9px; }
+.current .wind-status { margin-top: 7px; }
+@media (max-height: 720px) {
+  .current .location-header { padding: 18px 0; }
+  .current .current-copy { padding-top: 0; }
+  .current .temperature { height: 104px; font-size: 104px; }
+  .current .details-section { margin-top: 20px; }
+  .current .metric { min-height: 102px; padding: 10px; }
+  .current .metric-value { margin-top: 7px; font-size: 26px; }
+}
+
+/* Condition art spans the temperature block without taking extra screen space. */
+.current .current-copy { position: relative; isolation: isolate; flex-shrink: 0; }
+.condition-backdrop { position: absolute; z-index: -1; inset: 0 -24px; overflow: hidden; pointer-events: none; }
+.condition-backdrop svg { display: block; width: 100%; height: 100%; image-rendering: pixelated; opacity: .8; }
+.condition-backdrop::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, #102020b8 0%, #10202078 42%, transparent 74%); }
+.current .current-copy .condition,
+.current .current-copy .high-low { text-shadow: 0 1px 4px #0b191d; }
+.current .current-copy .high-low { color: #bdcbb8; }
+@media (max-width: 350px) { .condition-backdrop { left: -18px; right: -18px; } }
+
+/* Five days sit in a swipeable strip beneath the first-screen detail cards. */
+.current .daily-section { flex-shrink: 0; margin-top: 18px; }
+.current .daily-section .section-heading { margin-bottom: 10px; }
+.daily-scroll { overflow-x: auto; scrollbar-width: thin; scrollbar-color: #718b7d #10202060; }
+.daily-track { display: flex; gap: 8px; padding-bottom: 6px; }
+.day-card { flex: 0 0 76px; display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 10px 5px; border: 1px solid #a4b6a54d; background: #102020d9; }
+.day-card h3 { font-size: 11px; font-weight: 400; margin: 0; }
+.day-card:first-child h3 { color: var(--accent); }
+.day-card .weather-icon { width: 23px; height: 23px; }
+.day-temperatures { display: flex; align-items: baseline; gap: 8px; }
+.day-card .day-high { font-size: 17px; }
+.day-card .day-low { font-size: 12px; }
+.day-card .day-rain { font-size: 9px; margin: 0; }
+@media (max-height: 720px) {
+  .current .daily-section { margin-top: 12px; }
+  .current .daily-section .section-heading { margin-bottom: 7px; }
+  .day-card { padding-top: 8px; padding-bottom: 8px; gap: 5px; }
+}
+
+/* Live data states, attribution, and category indicators. */
+.preview-label #data-status { margin-left: 0; color: var(--muted); font-size: 8px; letter-spacing: .5px; }
+.live-controls { border-top: 1px dashed var(--line); padding: 16px 0 28px; }
+.live-controls p { color: var(--muted); font-size: 11px; line-height: 1.6; }
+.live-controls button { border: 1px solid var(--line); border-radius: 0; background: var(--panel); color: var(--ink); min-height: 44px; padding: 0 16px; cursor: pointer; }
+.live-controls button:disabled { opacity: .6; cursor: wait; }
+.live-controls .data-explainer { font-size: 10px; }
+.attribution a { color: var(--mint); text-underline-offset: 3px; }
+.sun-times .sun-time { font-size: 22px; letter-spacing: -1px; }
+.aqi-value { display: flex; align-items: baseline; gap: 6px; }
+.aqi-value small { margin-left: 0; max-width: 82px; font-size: 9px; line-height: 1.3; }
+.segmented-meter i { background: #30423a !important; }
+.segmented-meter[data-level="0"] i:nth-child(1) { background: #9dc9ac !important; }
+.segmented-meter[data-level="1"] i:nth-child(2) { background: #d4c47b !important; }
+.segmented-meter[data-level="2"] i:nth-child(3) { background: #dca06a !important; }
+.segmented-meter[data-level="3"] i:nth-child(4) { background: #db7e72 !important; }
+.segmented-meter[data-level="4"] i:nth-child(5), .segmented-meter[data-level="5"] i:nth-child(5) { background: #c28aba !important; }
+@media (max-height: 740px) { .current { height: auto; min-height: 100svh; padding-bottom: 18px; } }
+
+#updated { display: block; font-size: 10px; line-height: 1.6; letter-spacing: .3px; }

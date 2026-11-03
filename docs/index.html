@@ -5,58 +5,58 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#111b1b">
   <meta name="color-scheme" content="dark">
-  <meta name="description" content="A quiet, personal weather dashboard. LCD design prototype with Kirkland sample data.">
+  <meta name="description" content="A quiet, personal weather dashboard. Live Kirkland forecasts powered by Open-Meteo.">
   <title>Kirkland · Weather</title>
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="stylesheet" href="./styles.css">
-  <script src="./app.js" defer></script>
+  <script type="module" src="./app.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#forecast">Skip to forecast</a>
   <main class="weather-app" data-weather="cloudy">
     <section class="current" aria-labelledby="current-title">
       <div class="landscape" id="landscape" role="img" aria-label="Pixel art of a cloudy afternoon over Lake Washington"></div>
-    <div class="preview-label"><span class="status-dot"></span> DESIGN PREVIEW <span>• SAMPLE DATA</span></div>
+    <div class="preview-label"><span class="status-dot"></span><span id="data-status">LOADING WEATHER</span><span>KIRKLAND / WA</span></div>
     <header class="location-header">
       <div><p class="eyebrow">WASHINGTON / 98034</p><h1>Kirkland<span class="location-mark" aria-hidden="true">⌖</span></h1></div>
-      <div class="date-stamp">TUE, NOV 03<br><span id="clock">2:24 PM</span></div>
+      <div class="date-stamp"><span id="date">—</span><br><span id="clock">—</span></div>
     </header>
       <div class="current-copy">
-        <h2 class="condition" id="current-title">Mostly cloudy</h2>
-        <div class="temperature"><span id="current-temp">54</span><span class="degree">°</span><span class="unit">F</span></div>
-        <div class="high-low"><span>H <strong id="high">56°</strong></span><span>L <strong id="low">44°</strong></span><span class="feels">Feels like <strong id="feels">52°</strong></span></div>
+        <div class="condition-backdrop" id="condition-backdrop" aria-hidden="true"></div>
+        <h2 class="condition" id="current-title">Loading weather…</h2>
+        <div class="temperature"><span id="current-temp">—</span><span class="degree">°</span><span class="unit">F</span></div>
+        <div class="high-low"><span>H <strong id="high">—°</strong></span><span>L <strong id="low">—°</strong></span><span class="feels">Feels like <strong id="feels">—°</strong></span></div>
       </div>
+    <section class="section details-section" aria-label="Weather details">
+      <div class="metrics">
+        <article class="metric" id="rain-card"><div class="metric-label"><span data-icon="rain"></span><h3>PRECIP CHANCE</h3></div><p class="metric-value"><span id="rain-value">—</span><small>%</small></p><p class="metric-note" id="rain-note">Next 12 hours</p><div class="meter rain-meter"><span id="rain-meter"></span></div></article>
+        <article class="metric"><div class="metric-label"><span data-icon="wind"></span><h3>WIND & GUSTS</h3></div><p class="metric-value"><span id="wind-value">—</span><small>mph</small></p><p class="metric-note"><span id="wind-direction">—</span> · Gusts to <strong id="gust-value">— mph</strong></p><div class="wind-status" id="wind-status">Loading wind…</div></article>
+        <article class="metric"><div class="metric-label"><span data-icon="sun"></span><h3>UV INDEX</h3></div><p class="metric-value"><span id="uv-value">—</span><small id="uv-label">—</small></p><p class="metric-note">Today's peak</p><div class="segmented-meter uv-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div></article>
+        <article class="metric"><div class="metric-label"><span data-icon="air"></span><h3>AIR QUALITY</h3></div><p class="metric-value aqi-value"><span id="aqi-value">—</span><small id="aqi-label">—</small></p><p class="metric-note" id="aqi-note">US AQI model</p><div class="segmented-meter aqi-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div></article>
+      </div>
+    </section>
+    <section class="section daily-section" aria-labelledby="daily-title">
+      <div class="section-heading"><h2 id="daily-title">5-DAY OUTLOOK</h2><span>°F</span></div>
+      <div class="daily-scroll" tabindex="0" role="region" aria-label="Five-day forecast; scroll horizontally for more days"><div class="daily-track" id="daily"></div></div>
+    </section>
     </section>
     <section class="section hourly-section" id="forecast" aria-labelledby="hourly-title">
       <div class="section-heading"><h2 id="hourly-title">NEXT 12 HOURS</h2><span>LOCAL TIME</span></div>
       <div class="hourly-scroll" tabindex="0" role="region" aria-label="12-hour forecast; scroll horizontally for more hours"><div class="hourly-track" id="hourly"></div></div>
       <p class="scroll-hint">SWIPE TO SEE THE EVENING <span aria-hidden="true">→</span></p>
     </section>
-    <section class="section daily-section" aria-labelledby="daily-title">
-      <div class="section-heading"><h2 id="daily-title">5-DAY OUTLOOK</h2><span>°F</span></div>
-      <div class="forecast-key"><span>DAY / RAIN</span><span>LOW — HIGH</span></div>
-      <div id="daily"></div>
-    </section>
-    <section class="section details-section" aria-labelledby="details-title">
-      <div class="section-heading"><h2 id="details-title">A CLOSER LOOK</h2><span>TODAY</span></div>
-      <div class="metrics">
-        <article class="metric"><div class="metric-label"><span data-icon="rain"></span><h3>RAIN CHANCE</h3></div><p class="metric-value"><span id="rain-value">35</span><small>%</small></p><p class="metric-note" id="rain-note">A chance of rain this evening</p><div class="meter rain-meter"><span id="rain-meter"></span></div></article>
-        <article class="metric"><div class="metric-label"><span data-icon="wind"></span><h3>WIND & GUSTS</h3></div><p class="metric-value"><span id="wind-value">8</span><small>mph</small></p><p class="metric-note">SW · Gusts to <strong id="gust-value">16 mph</strong></p><div class="wind-status" id="wind-status">≋ A light breeze</div></article>
-        <article class="metric"><div class="metric-label"><span data-icon="sun"></span><h3>UV INDEX</h3></div><p class="metric-value"><span id="uv-value">1</span><small id="uv-label">LOW</small></p><p class="metric-note">Today's peak</p><div class="segmented-meter uv-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div></article>
-        <article class="metric"><div class="metric-label"><span data-icon="air"></span><h3>AIR QUALITY</h3></div><p class="metric-value">24<small>GOOD</small></p><p class="metric-note">US AQI · Current conditions</p><div class="segmented-meter aqi-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div></article>
-      </div>
-    </section>
+
+
     <section class="section sun-section" aria-labelledby="sun-title">
       <div class="section-heading"><h2 id="sun-title">SUNRISE / SUNSET</h2><span data-icon="sun"></span></div>
-      <div class="sun-times"><div><span class="eyebrow">SUNRISE</span><p>6:55<small>AM</small></p></div><div class="sun-divider" aria-hidden="true"><span>↗</span><span>↘</span></div><div><span class="eyebrow">SUNSET</span><p>4:47<small>PM</small></p></div></div>
+      <div class="sun-times"><div><span class="eyebrow">SUNRISE</span><p class="sun-time" id="sunrise">—</p></div><div class="sun-divider" aria-hidden="true"><span>↗</span><span>↘</span></div><div><span class="eyebrow">SUNSET</span><p class="sun-time" id="sunset">—</p></div></div>
     </section>
-    <footer class="app-footer"><span class="footer-logo" aria-hidden="true">▦</span><p>A small window into the weather.</p><span>KIRKLAND, WA · ILLUSTRATIVE DATA</span></footer>
-    <aside class="prototype-controls" aria-label="Prototype weather controls">
-      <div class="section-heading"><h2>PREVIEW CONDITIONS</h2><span>PROTOTYPE ONLY</span></div>
-      <div class="condition-buttons" role="group" aria-label="Choose sample weather"><button type="button" data-scene="cloudy" aria-pressed="true">Cloudy</button><button type="button" data-scene="rain" aria-pressed="false">Rain</button><button type="button" data-scene="clear" aria-pressed="false">Clear</button><button type="button" data-scene="night" aria-pressed="false">Night</button></div>
-      <p>Explore the changing sky. All values are sample data.</p>
-      <div id="scene-status" class="sr-only" role="status" aria-live="polite"></div>
+    <footer class="app-footer"><span class="footer-logo" aria-hidden="true">▦</span><p>A small window into the weather.</p><span id="updated">KIRKLAND, WA · WAITING FOR FORECAST</span><p class="attribution">Weather: <a href="https://open-meteo.com/">Open-Meteo</a><br>Air quality: <a href="https://atmosphere.copernicus.eu/">CAMS</a> via <a href="https://open-meteo.com/en/docs/air-quality-api">Open-Meteo</a></p></footer>
+    <aside class="live-controls" aria-label="Forecast status and refresh">
+      <p id="load-message" role="status" aria-live="polite">Fetching Kirkland weather…</p>
+      <button type="button" id="refresh">Refresh weather</button>
+      <p class="data-explainer">Kirkland, WA 98034 · Pacific time<br>Precipitation card: highest hourly chance in the next 12 hours.<br>Weather and air quality are model estimates.</p>
     </aside>
   </main>
 </body>
