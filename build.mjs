@@ -1,4 +1,4 @@
-import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, readFile, writeFile, unlink } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { BACKGROUND_FILES } from './weather-scenes.mjs';
 import { generateBackgrounds } from './scripts/generate-backgrounds.mjs';
@@ -8,7 +8,6 @@ await generateBackgrounds();
 const assets = [
   'index.html', 'styles.css', 'app.js', 'weather.mjs', 'pwa.mjs',
   'manifest.webmanifest', 'icon.svg', 'weather-scenes.mjs',
-  'backgrounds.html', 'gallery.css', 'gallery.mjs',
   ...BACKGROUND_FILES,
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png',
   'icons/apple-touch-180.png',
@@ -23,6 +22,10 @@ const worker = template.replace('__BUILD_VERSION__', hash.digest('hex').slice(0,
   .replace('__ASSET_LIST__', JSON.stringify(assets));
 await writeFile(new URL('sw.js', root), worker);
 await mkdir(new URL('icons/', output), {recursive:true});
+// Remove former review-only pages from the deployment output.
+for (const name of ['backgrounds.html', 'gallery.css', 'gallery.mjs']) {
+  await unlink(new URL(name, output)).catch(error => { if (error.code !== 'ENOENT') throw error; });
+}
 for (const asset of [...assets, 'sw.js']) {
   await mkdir(new URL('./', new URL(asset, output)), {recursive:true});
   await copyFile(new URL(asset, root), new URL(asset, output));

@@ -85,11 +85,13 @@ function renderAirQuality(data) {
 
 let lastWeather = null;
 let loading = false;
+let nextRefresh;
+let lastAttempt = 0;
 async function loadWeather() {
-  if (loading) return;
+  if (loading || document.hidden) return;
+  clearTimeout(nextRefresh);
   loading = true;
-  $('refresh').disabled = true;
-  $('refresh').textContent = 'Refreshing…';
+  lastAttempt = Date.now();
   $('data-status').textContent = 'UPDATING';
   $('load-message').textContent = 'Fetching Kirkland weather…';
   const [weather, air] = await Promise.allSettled([
@@ -101,11 +103,13 @@ async function loadWeather() {
     renderAirQuality(air.status === 'fulfilled' ? air.value : null);
     const age = Date.now() / 1000 - lastWeather.current.time;
     $('data-status').textContent = lastWeather.saved ? 'SAVED FORECAST' : age > 3 * 3600 ? 'OLDER FORECAST' : 'LIVE FORECAST';
-    $('updated').textContent = `Forecast valid ${localTime(lastWeather.current.time,{month:'short',day:'numeric',year:'numeric'})}, ${clockTime(lastWeather.current.time)} · Pacific time`;
-    $('load-message').textContent = lastWeather.saved ? 'Showing a saved forecast. Reconnect and refresh for current weather.' : air.status === 'fulfilled' && finite(air.value?.current?.us_aqi) !== null ? 'Kirkland forecast updated.' : 'Weather updated. Air quality is unavailable; try refreshing.';
+    const validTime = `Forecast valid ${localTime(lastWeather.current.time,{month:'short',day:'numeric',year:'numeric'})}, ${clockTime(lastWeather.current.time)} · Pacific time`;
+    document.querySelector('.date-stamp').title = validTime;
+    document.querySelector('.date-stamp').setAttribute('aria-label', validTime);
+    $('load-message').textContent = lastWeather.saved ? 'Showing a saved forecast. Updates resume when connected.' : air.status === 'fulfilled' && finite(air.value?.current?.us_aqi) !== null ? 'Kirkland forecast updated.' : 'Weather updated. Air quality is unavailable; retrying automatically.';
   } else {
     $('data-status').textContent = 'UPDATE FAILED';
-    $('load-message').textContent = lastWeather ? 'Could not refresh. Showing the previous forecast and its valid time.' : 'Could not load weather. Check your connection and try again.';
+    $('load-message').textContent = lastWeather ? 'Could not refresh. Showing the previous forecast and its valid time.' : 'Could not load weather. Updates will retry automatically.';
     if (!lastWeather) {
       $('current-title').textContent = 'Weather unavailable';
       $('hourly').textContent = 'Hourly forecast unavailable.';
@@ -114,9 +118,11 @@ async function loadWeather() {
     }
   }
   loading = false;
-  $('refresh').disabled = false;
-  $('refresh').textContent = 'Refresh weather';
+  nextRefresh = setTimeout(loadWeather, weather.status === 'fulfilled' && !lastWeather.saved && air.status === 'fulfilled' && finite(air.value?.current?.us_aqi) !== null ? 15 * 60_000 : 60_000);
 }
 document.querySelectorAll('[data-icon]').forEach(el => el.innerHTML = icon(el.dataset.icon));
-$('refresh').addEventListener('click', loadWeather);
+window.addEventListener('online', loadWeather);
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && Date.now() - lastAttempt >= 60_000) loadWeather();
+});
 loadWeather();

@@ -48,5 +48,6 @@ test('fog, ice, snow, and storms have the correct distinct visual layers',async(
 test('service worker includes every asset for offline condition changes',async()=>{
   const worker=await readFile('docs/sw.js','utf8');
   for(const path of BACKGROUND_FILES)assert.ok(worker.includes(`"${path}"`),path);
-  for(const path of ['weather-scenes.mjs','backgrounds.html','gallery.css','gallery.mjs'])assert.ok(worker.includes(`"${path}"`),path);
+  assert.ok(worker.includes('"weather-scenes.mjs"'));
+  for(const path of ['backgrounds.html','gallery.css','gallery.mjs'])assert.ok(!worker.includes(`"${path}"`),path);
 });
