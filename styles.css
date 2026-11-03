@@ -84,3 +84,22 @@
 .current .current-copy .high-low { text-shadow: 0 1px 4px #0b191d; }
 .current .current-copy .high-low { color: #bdcbb8; }
 @media (max-width: 350px) { .condition-backdrop { left: -18px; right: -18px; } }
+
+/* Five days sit in a swipeable strip beneath the first-screen detail cards. */
+.current .daily-section { flex-shrink: 0; margin-top: 18px; }
+.current .daily-section .section-heading { margin-bottom: 10px; }
+.daily-scroll { overflow-x: auto; scrollbar-width: thin; scrollbar-color: #718b7d #10202060; }
+.daily-track { display: flex; gap: 8px; padding-bottom: 6px; }
+.day-card { flex: 0 0 76px; display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 10px 5px; border: 1px solid #a4b6a54d; background: #102020d9; }
+.day-card h3 { font-size: 11px; font-weight: 400; margin: 0; }
+.day-card:first-child h3 { color: var(--accent); }
+.day-card .weather-icon { width: 23px; height: 23px; }
+.day-temperatures { display: flex; align-items: baseline; gap: 8px; }
+.day-card .day-high { font-size: 17px; }
+.day-card .day-low { font-size: 12px; }
+.day-card .day-rain { font-size: 9px; margin: 0; }
+@media (max-height: 720px) {
+  .current .daily-section { margin-top: 12px; }
+  .current .daily-section .section-heading { margin-bottom: 7px; }
+  .day-card { padding-top: 8px; padding-bottom: 8px; gap: 5px; }
+}

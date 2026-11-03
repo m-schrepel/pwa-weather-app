@@ -84,8 +84,7 @@ function render(mode) {
     return `<div class="hour"><span class="time">${time}</span>${icon(type)}<span class="hour-temp">${temp}°</span><span class="rain-chance" aria-label="${chance}% chance of rain">${chance}%</span></div>`;
   }).join('');
   const days=[['Today',s.low,s.high,mode==='rain'?'rain':mode==='clear'?'sun':'cloud',s.rain],['Wed',43,52,'rain',80],['Thu',42,53,'rain',65],['Fri',40,55,'cloud',20],['Sat',41,57,'sun',5]];
-  const min=Math.min(...days.map(d=>d[1]))-2,max=Math.max(...days.map(d=>d[2]))+2;
-  $('daily').innerHTML=days.map(([name,low,high,type,chance])=>`<div class="day"><div class="day-name">${name}<span class="day-rain" aria-label="${chance}% chance of rain">${chance}%</span></div>${icon(type)}<span class="day-low" aria-label="Low ${low} degrees">${low}°</span><div class="range-track" aria-hidden="true"><span class="range-bar" style="left:${(low-min)/(max-min)*100}%;width:${(high-low)/(max-min)*100}%"></span></div><span class="day-high" aria-label="High ${high} degrees">${high}°</span></div>`).join('');
+  $('daily').innerHTML=days.map(([name,low,high,type,chance])=>`<article class="day-card" aria-label="${name}: high ${high}, low ${low} degrees Fahrenheit, ${chance}% chance of rain"><h3>${name}</h3>${icon(type)}<div class="day-temperatures"><span class="day-high">${high}°</span><span class="day-low">${low}°</span></div><span class="day-rain">${chance}% rain</span></article>`).join('');
   document.querySelectorAll('[data-scene]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.scene===mode)));
 }
 
