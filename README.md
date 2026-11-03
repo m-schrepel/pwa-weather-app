@@ -19,7 +19,7 @@ No deployment workflow is required. `.nojekyll` disables Jekyll processing. Publ
 ## Design brief
 
 - Phone only, primarily Galaxy S24; dark LCD/pixel style.
-- Current conditions, today's high/low, and feels-like first.
+- A full-screen pixel weather scene with current conditions, today's high/low, and feels-like overlaid on the image; scroll for the forecast.
 - Next 12 hours and a five-day forecast on one scrolling page.
 - Rain chance, gusts, UV, US AQI, sunrise, and sunset.
 - Future live version: current location, Kirkland (98034) fallback, Fahrenheit, mph, local time, no settings.

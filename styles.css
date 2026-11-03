@@ -3,3 +3,49 @@
 
 /* Keep supporting information readable on a narrow phone screen. */
 .eyebrow{font-size:10px}.date-stamp{font-size:11px}.high-low{font-size:12px}.high-low .feels{font-size:11px}.scene-caption{font-size:10px}.section-heading>span{font-size:9px}.hour .time{font-size:10px}.hour .rain-chance{font-size:10px}.scroll-hint,.forecast-key{font-size:9px}.day-rain{font-size:10px}.metric-label h3{font-size:9px}.metric-value small{font-size:10px}.metric-note{font-size:10px;min-height:32px}.wind-status{font-size:10px}.sun-times .eyebrow{font-size:10px}.app-footer p{font-size:11px}.app-footer>span:last-child{font-size:9px}.prototype-controls>p{font-size:10px}
+
+/* The opening scene fills the phone's visible screen; the forecast follows it. */
+.current {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100svh;
+  min-height: 560px;
+  margin: 0 -24px;
+  padding: env(safe-area-inset-top, 0px) 24px env(safe-area-inset-bottom, 0px);
+  border: 0;
+  overflow: hidden;
+  background: #3b5350;
+}
+.current .landscape {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+}
+.current::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, #0b191de8 0%, #102020b8 30%, #10202038 53%, transparent 70%, #0b191dbf 100%);
+}
+.current .preview-label { border-color: #adc4ac40; }
+.current .location-header { padding: 28px 0 32px; }
+.current .current-copy { padding: 10px 0 0; }
+.current .condition { color: var(--ink); font-size: 15px; }
+.current .temperature { height: 122px; font-size: 122px; }
+.current .degree { font-size: 68px; }
+.current .high-low { justify-content: flex-start; gap: 18px; font-size: 13px; }
+.current .high-low .feels { margin-left: 0; font-size: 12px; }
+.current .scene-caption { margin-top: auto; padding: 20px 0 15px; color: var(--ink); font-size: 11px; text-shadow: 0 1px 3px #102020; }
+.forecast-cue { display: flex; justify-content: space-between; align-items: center; min-height: 44px; margin-bottom: 8px; border-top: 1px solid #adc4ac40; color: var(--ink); font-size: 9px; letter-spacing: 1.5px; text-decoration: none; }
+.forecast-cue span { font-size: 19px; }
+@media (min-width: 600px) { .weather-app { margin: 0 auto; border-top: 0; border-bottom: 0; } }
+@media (max-width: 350px) { .current { margin: 0 -18px; padding-left: 18px; padding-right: 18px; } .current .high-low { gap: 13px; } }
+@media (max-height: 600px) { .current .location-header { padding: 18px 0; } .current .temperature { height: 104px; font-size: 104px; } }
