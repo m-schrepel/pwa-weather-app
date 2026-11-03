@@ -1,0 +1,12 @@
+{
+  "id": "./",
+  "name": "Weather",
+  "short_name": "Weather",
+  "description": "A personal LCD weather dashboard",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#111b1b",
+  "theme_color": "#111b1b",
+  "icons": [{"src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"}]
+}
