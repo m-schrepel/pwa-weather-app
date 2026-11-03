@@ -18,6 +18,8 @@ No deployment workflow is required. `.nojekyll` disables Jekyll processing. Thes
 
 ## Data and behavior
 
+The status bar shows **Forecast as of** followed by the latest successful weather pull time in Pacific time. This is the fetch time, not the model valid time; saved, older, and failed updates retain explicit status labels.
+
 - Current conditions, feels-like, wind/gusts: Open-Meteo current model values; Fahrenheit and mph.
 - Five daily forecasts: high/low, weather code, maximum precipitation probability.
 - Twelve hourly slots: the current forecast hour and the next eleven, with their own weather icons and precipitation probabilities.
