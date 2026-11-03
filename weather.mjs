@@ -66,7 +66,7 @@ export function normalizeForecast(data) {
   });
   if (!hours.length) throw new Error('Hourly forecast unavailable');
   const days = d.time.slice(0,5).map((time,i) => ({time:finite(time), high:finite(d.temperature_2m_max?.[i]), low:finite(d.temperature_2m_min?.[i]), code:finite(d.weather_code?.[i]), chance:probability(d.precipitation_probability_max?.[i])}));
-  return {current, hours, days, uv:finite(d.uv_index_max?.[0]), sunrise:finite(d.sunrise?.[0]), sunset:finite(d.sunset?.[0]), outlook:rainOutlook(hours)};
+  return {saved:data._cached === true, current, hours, days, uv:finite(d.uv_index_max?.[0]), sunrise:finite(d.sunrise?.[0]), sunset:finite(d.sunset?.[0]), outlook:rainOutlook(hours)};
 }
 
 export function weatherUrl() {
@@ -83,6 +83,8 @@ export async function fetchJson(url) {
   try {
     const response = await fetch(url, {signal:controller.signal});
     if (!response.ok) throw new Error('Weather service unavailable');
-    return await response.json();
+    const data = await response.json();
+    if (data && typeof data === 'object') data._cached = response.headers.get('X-Weather-Cache') === 'saved';
+    return data;
   } finally { clearTimeout(timer); }
 }

@@ -124,3 +124,11 @@
 @media (max-height: 740px) { .current { height: auto; min-height: 100svh; padding-bottom: 18px; } }
 
 #updated { display: block; font-size: 10px; line-height: 1.6; letter-spacing: .3px; }
+
+[hidden] { display: none !important; }
+.pwa-controls { padding: 20px 0 max(28px, env(safe-area-inset-bottom)); border-top: 1px dashed var(--line); }
+.pwa-controls h2 { margin: 0 0 12px; font-weight: 400; font-size: 11px; letter-spacing: 1.3px; }
+.pwa-controls p { color: var(--muted); font-size: 11px; line-height: 1.6; }
+.pwa-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.pwa-actions button { font: inherit; font-size: 12px; min-height: 44px; padding: 0 16px; border: 1px solid var(--line); border-radius: 0; background: var(--panel); color: var(--ink); cursor: pointer; }
+.pwa-actions button:disabled { opacity: .6; cursor: wait; }
