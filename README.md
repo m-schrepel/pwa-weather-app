@@ -1,4 +1,4 @@
-# Weather / LCD
+# Weather / Watercolor
 
 A phone-first, ad-free weather dashboard for a Samsung Galaxy S24, using live Open-Meteo weather and modeled air quality for your current location, with **Kirkland, WA 98034** as the fallback.
 
@@ -6,7 +6,7 @@ A phone-first, ad-free weather dashboard for a Samsung Galaxy S24, using live Op
 
 Run `python3 -m http.server 4173 --bind 127.0.0.1` from this directory, then open http://127.0.0.1:4173. An HTTP server is required for browser ES modules.
 
-No third-party dependencies, API keys, accounts, or external fonts. The browser calls Open-Meteo directly over HTTPS. Weather updates automatically every 15 minutes while visible, when returning after a minute away, and when connectivity returns. Failed or saved-weather loads retry after a minute. On startup and each refresh, the app requests a device location fix (up to five minutes old). Allow the browser’s location prompt to see local weather. The home screen shows “Current location” and latitude/longitude rounded to three decimals, plus a “Use my location” button to retry. Denied, unavailable, or unanswered requests use an explicitly labeled Kirkland fallback (47.716, -122.211), or the last detected location while the app remains open. If access is blocked, enable location in browser/site settings before retrying. Location acquisition is bounded to twelve seconds; no continuous GPS tracking or separate location storage is used. Rounded coordinates are sent to Open-Meteo and included in the existing per-request offline weather cache.
+No third-party dependencies, API keys, accounts, or external fonts. The browser calls Open-Meteo directly over HTTPS. Weather updates automatically every 15 minutes while visible, when returning after a minute away, and when connectivity returns. Failed or saved-weather loads retry after a minute. On startup and each refresh, the app requests a device location fix (up to five minutes old). Allow the browser’s location prompt to see local weather. The home screen shows “Current location” and latitude/longitude rounded to three decimals, plus an accessible crosshair icon button to retry. Denied, unavailable, or unanswered requests use an explicitly labeled Kirkland fallback (47.716, -122.211), or the last detected location while the app remains open. If access is blocked, enable location in browser/site settings before retrying. Location acquisition is bounded to twelve seconds; no continuous GPS tracking or separate location storage is used. Rounded coordinates are sent to Open-Meteo and included in the existing per-request offline weather cache.
 
 ## Static output and GitHub Pages
 
@@ -28,13 +28,13 @@ The status bar shows **Forecast as of** followed by the latest successful weathe
 - AQI: current modeled US AQI from CAMS via Open-Meteo, labeled with its own valid time; not a local monitoring-station observation. Missing air quality does not block the weather.
 - Sunrise/sunset, rain timing, and all dates/times use the forecast timezone returned by Open-Meteo (`timezone=auto` for device coordinates), including DST. The Kirkland fallback uses `America/Los_Angeles`.
 - Requests time out after 12 seconds. Without a saved response, first-load failures show dashes and retry automatically, never sample weather. When the service worker has a previously successful response, it uses that as an explicitly labeled saved forecast on network failure. Failed refreshes retain the previous forecast with an explicit update-failed message. A forecast older than three hours is labeled older. Offline/cached weather is labeled SAVED FORECAST regardless of age, with its valid timestamp available on the status label to assistive technology and on hover. Saved hourly/daily data never uses NOW/Today labels.
-- Static pixel weather scenes follow current conditions through an explicit weather-code mapping. All 29 documented Open-Meteo codes are covered, including heavy thunderstorm code 97, with day/night variants and fallback art. Snow, fog, and thunderstorm icons are supported.
+- Static composable weather layers over a watercolor Pacific Northwest landscape follow current conditions through an explicit weather-code mapping. All 29 documented Open-Meteo codes are covered, including heavy thunderstorm code 97, with day/night variants and fallback art. Snow, fog, and thunderstorm icons are supported.
 
 Weather attribution: [Open-Meteo](https://open-meteo.com/). Air-quality attribution: [CAMS](https://atmosphere.copernicus.eu/) via [Open-Meteo](https://open-meteo.com/en/docs/air-quality-api). Visible attribution is included in the app.
 
 ## Design and scope
 
-Dark LCD/pixel style; a full-screen lake scene with current weather, detail cards, and a horizontally scrolling five-day forecast. Hourly weather and a plain sunrise/sunset time row are included in the same opening overview. The location row sits above current conditions. There is no footer or setup section. Short screens and larger text can grow the page to avoid clipping data.
+Watercolor-and-pencil style; a full-screen Pacific Northwest lake scene with current weather, detail cards, and a horizontally scrolling five-day forecast. Hourly weather and a plain sunrise/sunset time row are included in the same opening overview. The location row sits above current conditions. There is no footer or setup section. Short screens and larger text can grow the page to avoid clipping data.
 
 No ads, analytics, login, settings screen, radar, alerts, or push notifications. Device location requires browser permission and HTTPS (or localhost during development).
 
@@ -59,14 +59,18 @@ The manifest has relative ID/start/scope URLs, standard 192/512px PNG icons, and
 
 Regenerate icons with `python3 scripts/generate-icons.py`, then rebuild. This reproduces the existing pixel icon using only Python’s standard library; no image-generation service or package installation is needed.
 
-## Weather background assets
+## Weather artwork and composable layers
 
-Review the library locally at http://127.0.0.1:4173/backgrounds.html. The gallery is excluded from `docs/` and the production cache. The separate gallery filters by condition family and day/night; each card links directly to the SVG files. It is an art-review page rather than part of the phone dashboard’s navigation.
+Review locally at http://127.0.0.1:4173/backgrounds.html. This development gallery is excluded from `docs/` and the production cache. Filters show condition families and day/night; each scene links to its landscape JPEG and transparent weather SVG.
 
-`weather-scenes.mjs` is the shared condition catalog and asset resolver. `backgroundAssets(code, isDay)` returns allowlisted relative paths for a portrait lake scene and the wide temperature-strip backdrop. Unknown codes use neutral fallback assets. Each documented code has its own files, even when it shares a visual family with another intensity.
+`assets/landscape/` contains two original 1024 × 1536 watercolor-and-pencil Pacific Northwest lake canvases, optimized as JPEGs. Both have quiet, empty skies. The same fir-covered slopes, ferns, mossy shoreline and wooden landing stay in place while the weather changes. `artwork/` records the generation prompts and design notes. The launcher icons retain their existing pixel artwork.
 
-`assets/weather/` contains **120 static SVGs**: 29 codes × two times of day × two formats, plus four fallback files. The set is about 585 KB uncompressed. Artwork retains the established pixel style and lake silhouette; precipitation density, frozen ground details, haze, lightning, and hail distinguish condition families and intensities. There are no animated flashes. Moon shapes and snow-covered banks are illustrative, not measured moon phases or snow depth.
+`weather-scenes.mjs` is the shared condition catalog and allowlisted resolver. `backgroundAssets(code, isDay)` returns a shared day/night landscape and the matching transparent atmosphere layer. Unknown codes use an empty weather layer rather than inventing conditions. `scripts/generate-backgrounds.mjs` builds 60 lightweight SVG layers: 29 codes plus fallback, each by day and night. Sun, moon/stars, organic cloud washes, fog bands, drizzle/rain, snow/grains, freezing precipitation, static lightning and hail compose according to the existing code and intensity. Showers have gaps and heavier precipitation has denser marks. Moon shape and edge frost are illustrative; the artwork does not claim measured moon phase, ground ice or snow depth. There is no snowfall accumulation on the base image.
 
-`node build.mjs` runs `scripts/generate-backgrounds.mjs`, packages all assets into `docs/assets/weather/`, and includes the full library in the versioned service-worker cache so alternate conditions work offline. You can also run `node scripts/generate-backgrounds.mjs` independently. To change art, edit the generator; to change code mappings, edit the shared catalog, then rebuild. No third-party packages or external image-generation services are used.
+The landscape and atmosphere are separate image elements, so changing weather does not reload the shared landscape. The layers use static paths and gradients with no animation, flashing, filters, JavaScript or external resources. Reduced-motion users see the same static artwork. Text panels and shading keep data readable across day/night conditions. `weather-icons.mjs` supplies fourteen scalable watercolor-wash symbols, including separate clear/partly cloudy day and night variants, freezing rain and hail.
 
-Background tests verify all documented codes and both day/night variants resolve to existing files, generated source and docs agree, invalid inputs use fallback paths, sun/moon rules are respected, precipitation families have the appropriate layers, and every asset is available to the offline cache. All generated SVGs are also XML-parsed during validation.
+`node build.mjs` regenerates the layers and packages both canvases, all layers, the icon renderer and styles into the versioned offline cache. The complete artwork is under 1 MB. No third-party packages or live image-generation services are needed to build or run the app.
+
+Tests verify all weather codes and both periods, correct layer combinations, no sun in overcast/rain/night art, moon and stars for open night skies, intensity differences, safe unknown inputs, complete offline coverage, and source/docs parity. All generated SVGs are XML-validated during development. Run the four test files listed above after rebuilding.
+
+The location control is a native button with a crosshair SVG, a transparent 44 × 44 CSS-pixel hit target, a visible keyboard focus ring, an accessible name and a tooltip. It keeps the existing permission, loading and retry behavior.

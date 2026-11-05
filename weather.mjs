@@ -1,4 +1,4 @@
-import { WEATHER_BY_CODE } from './weather-scenes.mjs';
+import { WEATHER_BY_CODE, weatherIconType } from './weather-scenes.mjs';
 // Open-Meteo requests use Fahrenheit, mph, inches, and UTC epoch timestamps.
 export const LOCATION = Object.freeze({ latitude: 47.716, longitude: -122.211, timezone: 'America/Los_Angeles' });
 export const finite = value => typeof value === 'number' && Number.isFinite(value) ? value : null;
@@ -11,12 +11,12 @@ export const clockTime = (time, timezone = LOCATION.timezone) => localTime(time,
 
 export function condition(code, isDay = true) {
   const item = typeof code === 'number' ? WEATHER_BY_CODE[code] : null;
-  if (!item) return {label:'Conditions unavailable', icon:'cloud', scene:'cloudy', snowy:false};
+  if (!item) return {label:'Conditions unavailable', icon:'unknown', scene:'cloudy', snowy:false};
   const snowy = item.icon === 'snow';
   const wet = item.icon === 'rain' || item.icon === 'storm';
   return {
-    label: !isDay && (code === 0 || code === 1) ? 'Clear night' : item.label,
-    icon: code <= 1 && !isDay ? 'moon' : item.icon,
+    label: !isDay && code === 0 ? 'Clear night' : item.label,
+    icon: weatherIconType(code, isDay),
     scene: wet ? 'rain' : code <= 1 ? (isDay ? 'clear' : 'night') : 'cloudy',
     snowy,
   };
