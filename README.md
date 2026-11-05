@@ -1,12 +1,12 @@
 # Weather / LCD
 
-A phone-first, ad-free weather dashboard for a Samsung Galaxy S24, using live Open-Meteo weather and modeled air quality for **Kirkland, WA 98034**.
+A phone-first, ad-free weather dashboard for a Samsung Galaxy S24, using live Open-Meteo weather and modeled air quality for your current location, with **Kirkland, WA 98034** as the fallback.
 
 ## Preview locally
 
 Run `python3 -m http.server 4173 --bind 127.0.0.1` from this directory, then open http://127.0.0.1:4173. An HTTP server is required for browser ES modules.
 
-No third-party dependencies, API keys, accounts, or external fonts. The browser calls Open-Meteo directly over HTTPS. Weather updates automatically every 15 minutes while visible, when returning after a minute away, and when connectivity returns. Failed or saved-weather loads retry after a minute. This version uses fixed Kirkland coordinates (47.716, -122.211); device geolocation is a later step.
+No third-party dependencies, API keys, accounts, or external fonts. The browser calls Open-Meteo directly over HTTPS. Weather updates automatically every 15 minutes while visible, when returning after a minute away, and when connectivity returns. Failed or saved-weather loads retry after a minute. On startup and each refresh, the app requests a device location fix (up to five minutes old). Allow the browser’s location prompt to see local weather. The home screen shows “Current location” and latitude/longitude rounded to three decimals, plus a “Use my location” button to retry. Denied, unavailable, or unanswered requests use an explicitly labeled Kirkland fallback (47.716, -122.211), or the last detected location while the app remains open. If access is blocked, enable location in browser/site settings before retrying. Location acquisition is bounded to twelve seconds; no continuous GPS tracking or separate location storage is used. Rounded coordinates are sent to Open-Meteo and included in the existing per-request offline weather cache.
 
 ## Static output and GitHub Pages
 
@@ -18,7 +18,7 @@ No deployment workflow is required. `.nojekyll` disables Jekyll processing. Thes
 
 ## Data and behavior
 
-The status bar shows **Forecast as of** followed by the latest successful weather pull time in Pacific time. This is the fetch time, not the model valid time; saved, older, and failed updates retain explicit status labels.
+The status bar shows **Forecast as of** followed by the latest successful weather pull time in the forecast location’s timezone. This is the fetch time, not the model valid time; saved, older, and failed updates retain explicit status labels.
 
 - Current conditions, feels-like, wind/gusts: Open-Meteo current model values; Fahrenheit and mph.
 - Five daily forecasts: high/low, weather code, maximum precipitation probability.
@@ -26,7 +26,7 @@ The status bar shows **Forecast as of** followed by the latest successful weathe
 - Precipitation card: **maximum hourly probability in those twelve slots**, not an independently calculated twelve-hour event probability. Summary thresholds: below 20% means mostly dry, 20–49% possible, 50%+ likely. The first contiguous period meeting the threshold determines approximate timing. Snow codes change the summary to snow. Missing probabilities never produce a dry-weather claim.
 - UV: today's forecast maximum, with category thresholds 3/6/8/11.
 - AQI: current modeled US AQI from CAMS via Open-Meteo, labeled with its own valid time; not a local monitoring-station observation. Missing air quality does not block the weather.
-- Sunrise/sunset and all dates/times use Pacific time. API epoch timestamps are formatted with `America/Los_Angeles` for DST-aware display.
+- Sunrise/sunset, rain timing, and all dates/times use the forecast timezone returned by Open-Meteo (`timezone=auto` for device coordinates), including DST. The Kirkland fallback uses `America/Los_Angeles`.
 - Requests time out after 12 seconds. Without a saved response, first-load failures show dashes and retry automatically, never sample weather. When the service worker has a previously successful response, it uses that as an explicitly labeled saved forecast on network failure. Failed refreshes retain the previous forecast with an explicit update-failed message. A forecast older than three hours is labeled older. Offline/cached weather is labeled SAVED FORECAST regardless of age, with its valid timestamp available on the status label to assistive technology and on hover. Saved hourly/daily data never uses NOW/Today labels.
 - Static pixel weather scenes follow current conditions through an explicit weather-code mapping. All 29 documented Open-Meteo codes are covered, including heavy thunderstorm code 97, with day/night variants and fallback art. Snow, fog, and thunderstorm icons are supported.
 
@@ -34,13 +34,13 @@ Weather attribution: [Open-Meteo](https://open-meteo.com/). Air-quality attribut
 
 ## Design and scope
 
-Dark LCD/pixel style; a full-screen lake scene with current weather, detail cards, and a horizontally scrolling five-day forecast. Hourly weather and a plain sunrise/sunset time row are included in the same opening overview. There is no footer, setup section, or refresh button. Short screens and larger text can grow the page to avoid clipping data.
+Dark LCD/pixel style; a full-screen lake scene with current weather, detail cards, and a horizontally scrolling five-day forecast. Hourly weather and a plain sunrise/sunset time row are included in the same opening overview. The location row sits above current conditions. There is no footer or setup section. Short screens and larger text can grow the page to avoid clipping data.
 
-No ads, analytics, login, settings screen, radar, alerts, or push notifications. Device location remains a later step; the installed app uses Kirkland.
+No ads, analytics, login, settings screen, radar, alerts, or push notifications. Device location requires browser permission and HTTPS (or localhost during development).
 
 ## Verification
 
-Run `node build.mjs`, then `node --test weather.test.mjs pwa.test.mjs backgrounds.test.mjs`. Tests cover rain timing across midnight, missing values, probability thresholds, AQI/UV categories, condition codes, hourly selection, DST, request units, and HTTP errors. With no third-party packages there are no npm dependencies to audit.
+Run `node build.mjs`, then `node --test weather.test.mjs location.test.mjs pwa.test.mjs backgrounds.test.mjs`. Tests cover location permission errors, retries, coordinate validation, API location parameters, travel without stale weather, local timezone formatting, rain timing across midnight, missing values, probability thresholds, AQI/UV categories, condition codes, hourly selection, DST, request units, and HTTP errors. With no third-party packages there are no npm dependencies to audit.
 
 ## Install on your S24
 

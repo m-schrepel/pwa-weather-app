@@ -4,10 +4,10 @@ export const LOCATION = Object.freeze({ latitude: 47.716, longitude: -122.211, t
 export const finite = value => typeof value === 'number' && Number.isFinite(value) ? value : null;
 const probability = value => finite(value) !== null && value >= 0 && value <= 100 ? value : null;
 export const rounded = value => finite(value) === null ? '—' : String(Math.round(value));
-export function localTime(time, options = {}) {
-  return finite(time) === null ? '—' : new Intl.DateTimeFormat('en-US', { timeZone: LOCATION.timezone, ...options }).format(new Date(time * 1000));
+export function localTime(time, options = {}, timezone = LOCATION.timezone) {
+  return finite(time) === null ? '—' : new Intl.DateTimeFormat('en-US', { timeZone: timezone, ...options }).format(new Date(time * 1000));
 }
-export const clockTime = time => localTime(time, { hour: 'numeric', minute: '2-digit' });
+export const clockTime = (time, timezone = LOCATION.timezone) => localTime(time, { hour: 'numeric', minute: '2-digit' }, timezone);
 
 export function condition(code, isDay = true) {
   const item = typeof code === 'number' ? WEATHER_BY_CODE[code] : null;
@@ -36,7 +36,7 @@ export function windDirection(degrees) {
 
 // The card's percentage is the maximum hourly precipitation probability, not
 // a combined probability of rain over the whole window. Timing is approximate.
-export function rainOutlook(hours) {
+export function rainOutlook(hours, timezone = LOCATION.timezone) {
   const chances = hours.map(hour => probability(hour.chance));
   const available = chances.filter(value => value !== null);
   const chance = available.length ? Math.max(...available) : null;
@@ -49,8 +49,8 @@ export function rainOutlook(hours) {
   const period = hours.slice(start, end + 1);
   const term = period.some(hour => condition(hour.code).snowy) ? 'Snow' : 'Rain';
   const likelihood = threshold === 50 ? 'likely' : 'possible';
-  const time = clockTime(hours[start].time);
-  const timing = start === 0 ? `through about ${clockTime(hours[end].time + 3600)}` : `around ${time}`;
+  const time = clockTime(hours[start].time, timezone);
+  const timing = start === 0 ? `through about ${clockTime(hours[end].time + 3600, timezone)}` : `around ${time}`;
   return { chance, note:`${term} ${likelihood} ${timing}` };
 }
 
@@ -67,15 +67,21 @@ export function normalizeForecast(data) {
   });
   if (!hours.length) throw new Error('Hourly forecast unavailable');
   const days = d.time.slice(0,5).map((time,i) => ({time:finite(time), high:finite(d.temperature_2m_max?.[i]), low:finite(d.temperature_2m_min?.[i]), code:finite(d.weather_code?.[i]), chance:probability(d.precipitation_probability_max?.[i])}));
-  return {saved:data._cached === true, current, hours, days, uv:finite(d.uv_index_max?.[0]), sunrise:finite(d.sunrise?.[0]), sunset:finite(d.sunset?.[0]), outlook:rainOutlook(hours)};
+  let timezone = LOCATION.timezone;
+  if (typeof data.timezone === 'string') {
+    try { new Intl.DateTimeFormat('en-US', {timeZone:data.timezone}); timezone = data.timezone; } catch {}
+  }
+  return {timezone, saved:data._cached === true, current, hours, days, uv:finite(d.uv_index_max?.[0]), sunrise:finite(d.sunrise?.[0]), sunset:finite(d.sunset?.[0]), outlook:rainOutlook(hours, timezone)};
 }
 
-export function weatherUrl() {
-  const params = new URLSearchParams({latitude:LOCATION.latitude, longitude:LOCATION.longitude, timezone:LOCATION.timezone, temperature_unit:'fahrenheit', wind_speed_unit:'mph', precipitation_unit:'inch', timeformat:'unixtime', forecast_days:'5', current:'temperature_2m,apparent_temperature,weather_code,is_day,wind_speed_10m,wind_direction_10m,wind_gusts_10m', hourly:'temperature_2m,precipitation_probability,weather_code,is_day', daily:'temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max,uv_index_max,sunrise,sunset'});
+export function weatherUrl(location = LOCATION) {
+  validateLocation(location);
+  const params = new URLSearchParams({latitude:location.latitude, longitude:location.longitude, timezone:location.timezone, temperature_unit:'fahrenheit', wind_speed_unit:'mph', precipitation_unit:'inch', timeformat:'unixtime', forecast_days:'5', current:'temperature_2m,apparent_temperature,weather_code,is_day,wind_speed_10m,wind_direction_10m,wind_gusts_10m', hourly:'temperature_2m,precipitation_probability,weather_code,is_day', daily:'temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max,uv_index_max,sunrise,sunset'});
   return `https://api.open-meteo.com/v1/forecast?${params}`;
 }
-export function airQualityUrl() {
-  const params = new URLSearchParams({latitude:LOCATION.latitude, longitude:LOCATION.longitude, timezone:LOCATION.timezone, current:'us_aqi', timeformat:'unixtime'});
+export function airQualityUrl(location = LOCATION) {
+  validateLocation(location);
+  const params = new URLSearchParams({latitude:location.latitude, longitude:location.longitude, timezone:location.timezone, current:'us_aqi', timeformat:'unixtime'});
   return `https://air-quality-api.open-meteo.com/v1/air-quality?${params}`;
 }
 export async function fetchJson(url) {
@@ -88,4 +94,8 @@ export async function fetchJson(url) {
     if (data && typeof data === 'object') data._cached = response.headers.get('X-Weather-Cache') === 'saved';
     return data;
   } finally { clearTimeout(timer); }
+}
+
+export function validateLocation(location) {
+  if (finite(location?.latitude) === null || Math.abs(location.latitude) > 90 || finite(location?.longitude) === null || Math.abs(location.longitude) > 180) throw new Error('Invalid location');
 }
