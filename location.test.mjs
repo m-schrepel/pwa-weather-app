@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 import * as weather from './weather.mjs';
 import { backgroundAssets } from './weather-scenes.mjs';
+import { icon } from './weather-icons.mjs';
 import { detectLocation, coordinateLabel, FALLBACK_LOCATION } from './location.mjs';
 
 test('device location is validated, rounded, and requested with bounded battery-friendly options', async () => {
@@ -53,7 +54,7 @@ async function appHarness(detected) {
   };
   const requests = [];
   let detection = detected, broken = false;
-  const context = vm.createContext({...weather, backgroundAssets, formatLocalTime:weather.localTime, formatClockTime:weather.clockTime,
+  const context = vm.createContext({...weather, backgroundAssets, icon, formatLocalTime:weather.localTime, formatClockTime:weather.clockTime,
     detectLocation:async () => detection, coordinateLabel, FALLBACK_LOCATION,
     fetchJson:async url => {
       requests.push(new URL(url));

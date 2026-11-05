@@ -1,0 +1,26 @@
+/* Watercolor artwork and colors; dashboard spacing stays in styles.css. */
+:root{color-scheme:light;--bg:#e9e5d9;--panel:#faf6e9;--ink:#263b39;--muted:#3b514b;--dim:#3b514b;--mint:#355a4a;--accent:#78623b;--line:#778c7f70}
+body{background:#e9e5d9}
+.weather-app{color:var(--ink)}
+.current{background:var(--bg)}
+.current .landscape{z-index:-3}
+.landscape::after{display:none}
+.landscape img{image-rendering:auto}
+.weather-layer{position:absolute;inset:0;z-index:-2;pointer-events:none}
+.weather-layer img{display:block;width:100%;height:100%;object-fit:cover}
+.current::before,.weather-app[data-period="day"] .current::before{background:linear-gradient(180deg,#fffbed9c,#fffbed45 38%,#fffbed10 70%,#fffbed65)}
+.current .metric,.current .hour,.current .day-card{background:#faf6e9ed;border-color:#4b625b65}
+.current .metrics,.current .status-bar,.sun-summary{border-color:#4b625b65}
+.current .metric-note,.current .metric-label,.sun-summary dt,.current .current-copy .high-low,.location-detail{color:var(--muted)}
+.current .condition,.high-low strong,.metric-note strong,.sun-summary dd,.location-name{color:var(--ink)}
+.current .day-card .day-rain,.hour .rain-chance,.section-heading>span{color:var(--muted)}
+.temperature,.sun-summary,.current .current-copy .condition,.current .current-copy .high-low{text-shadow:none}
+.weather-icon{color:#3e514b;image-rendering:auto}
+.location-button{display:flex;align-items:center;justify-content:center;width:44px;height:44px;min-height:44px;max-width:44px;padding:10px;border:0;background:transparent;color:var(--ink)}
+.location-button svg{display:block;width:24px;height:24px;flex-shrink:0}
+.location-button:focus-visible{outline:2px solid var(--accent);outline-offset:0;border-radius:4px}
+.weather-app[data-period="night"]{color-scheme:dark;--bg:#1e3442;--ink:#fff3d2;--muted:#e0e5d4;--dim:#e0e5d4;--mint:#ede5b7;--accent:#efd186;--icon-paper:#1e3442}
+.weather-app[data-period="night"] .current::before{background:linear-gradient(180deg,#10243670,#10243620 55%,#10243660)}
+.weather-app[data-period="night"] .metric,.weather-app[data-period="night"] .hour,.weather-app[data-period="night"] .day-card{background:#1e3442ed;border-color:#b8c7c366}
+.weather-app[data-period="night"] .metrics,.weather-app[data-period="night"] .status-bar,.weather-app[data-period="night"] .sun-summary{border-color:#b8c7c366}
+.weather-app[data-period="night"] .weather-icon{color:#e7e8d5}

@@ -1,0 +1,12 @@
+[
+  {
+    "id": "canvas-day",
+    "prompt": "Use case: precise-object-edit. Image 1 is the edit target: an original watercolor-and-colored-pencil Pacific Northwest lake illustration. Make it a QUIET BASE CANVAS for a weather app that adds weather objects in separate layers. Preserve the exact watercolor and pencil medium, paper texture, forested foothills, lake horizon, wooden landing at lower left, mossy shoreline rocks, ferns, evergreen foliage, driftwood and entire perspective. Preserve portrait 1024x1536 resolution and the open center. Remove ALL discrete weather objects from the sky: no sun disc, moon, stars, clouds, rain, fog, lightning, hail or snow. Clean open watercolor sky, subtle natural wash only. Do not add any new object, people, text, border or UI. No imitation of any artist or book. Daytime base: pale blue and warm cream wash in sky, diffuse daylight on mossy forest and teal lake, no direct sun disc. Bright but quiet Pacific Northwest daytime.",
+    "reference": "pnw-day.png"
+  },
+  {
+    "id": "canvas-night",
+    "prompt": "Use case: precise-object-edit. Image 1 is the edit target: an original watercolor-and-colored-pencil Pacific Northwest lake illustration. Make it a QUIET BASE CANVAS for a weather app that adds weather objects in separate layers. Preserve the exact watercolor and pencil medium, paper texture, forested foothills, lake horizon, wooden landing at lower left, mossy shoreline rocks, ferns, evergreen foliage, driftwood and entire perspective. Preserve portrait 1024x1536 resolution and the open center. Remove ALL discrete weather objects from the sky: no sun disc, moon, stars, clouds, rain, fog, lightning, hail or snow. Clean open watercolor sky, subtle natural wash only. Do not add any new object, people, text, border or UI. No imitation of any artist or book. Nighttime base: blue-indigo wash in empty sky, muted deep evergreen hills and blue-jade water under soft ambient nighttime light, no moon or stars or direct light sources. Readable atmospheric lakeshore, not black.",
+    "reference": "pnw-night.png"
+  }
+]

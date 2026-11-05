@@ -1,3 +1,4 @@
+import { icon } from './weather-icons.mjs';
 import { backgroundAssets } from './weather-scenes.mjs';
 import { finite, rounded, localTime as formatLocalTime, clockTime as formatClockTime, condition, uvCategory, aqiCategory, normalizeForecast, weatherUrl, airQualityUrl, fetchJson } from './weather.mjs';
 import { detectLocation, coordinateLabel, FALLBACK_LOCATION } from './location.mjs';
@@ -8,26 +9,11 @@ const localTime = (time, options) => formatLocalTime(time, options, forecastTime
 const clockTime = time => formatClockTime(time, forecastTimezone);
 
 
-function icon(type) {
-  const paths = {
-    sun:'<g fill="#d4b77b"><path d="M10 0h4v4h-4zM10 20h4v4h-4zM0 10h4v4H0zM20 10h4v4h-4zM3 3h3v3H3zM18 3h3v3h-3zM3 18h3v3H3zM18 18h3v3h-3zM8 6h8v2h2v8h-2v2H8v-2H6V8h2z"/></g>',
-    cloud:'<path fill="#a7bcad" d="M5 8h4V5h8v3h3v3h3v8H1v-8h4z"/><path fill="#789a92" d="M1 16h22v3H1z"/>',
-    rain:'<path fill="#a7bcad" d="M5 4h4V1h8v3h3v3h3v7H1V7h4z"/><path fill="#8ab6bf" d="M5 16h2v4H5zm7 2h2v5h-2zm7-2h2v4h-2z"/>',
-    moon:'<path fill="#c5d7bc" d="M9 2h6v3h-4v8h4v3h6v3h-4v3H8v-3H5v-3H2V8h3V5h4z"/><path fill="#d4b77b" d="M19 3h3v3h-3z"/>',
-    wind:'<path fill="#9dc9ac" d="M2 6h14V3h5v3h-2v3H2zm0 6h20v3H2zm4 6h12v3H6z"/>',
-    snow:'<path fill="#c5d7bc" d="M10 0h4v7l5-5 3 3-6 6h8v3h-8l6 6-3 3-5-6v7h-4v-7l-5 5-3-3 6-5H0v-4h8L2 5l3-3 5 5z"/>',
-    fog:'<path fill="#a7bcad" d="M2 4h20v3H2zm3 6h16v3H5zM1 16h20v3H1z"/>',
-    storm:'<path fill="#a7bcad" d="M5 4h4V1h8v3h3v3h3v7H1V7h4z"/><path fill="#d4b77b" d="M11 12h7l-5 5h4L7 24l3-7H6z"/>',
-    air:'<path fill="#9dc9ac" d="M1 4h18v3H1zm4 6h18v3H5zM1 16h18v3H1z"/>'
-  };
-  return `<svg class="weather-icon" viewBox="0 0 24 24" aria-hidden="true" shape-rendering="crispEdges">${paths[type] || paths.cloud}</svg>`;
-}
-
 // Only allowlisted, pre-generated local files can become image URLs.
 function renderBackgrounds(code, isDay) {
   const paths = backgroundAssets(code, isDay);
   const fallback = backgroundAssets(null, isDay);
-  for (const [id, key] of [['landscape','landscape'], ['condition-backdrop','temperature']]) {
+  for (const [id, key] of [['landscape','landscape'], ['weather-layer','atmosphere']]) {
     const host = $(id);
     let img = host.querySelector('img');
     if (!img) {
@@ -65,7 +51,7 @@ function renderWeather(data) {
   $('rain-meter').style.width = `${outlook.chance ?? 0}%`;
   $('rain-card').title = 'Maximum hourly precipitation probability in the next 12 hours';
   renderBackgrounds(c.code, c.isDay);
-  $('landscape').setAttribute('aria-label', `Pixel art: ${view.label.toLowerCase()} over an illustrated lake`);
+  $('landscape').setAttribute('aria-label', `Watercolor illustration: ${view.label.toLowerCase()} over a Pacific Northwest lake`);
   $('hourly').innerHTML = hours.map((hour,i) => `<div class="hour"><span class="time">${i === 0 && !saved ? 'NOW' : localTime(hour.time,{hour:'numeric'}).replace(' ','')}</span>${icon(condition(hour.code,hour.isDay).icon)}<span class="hour-temp">${rounded(hour.temp)}°</span><span class="rain-chance" aria-label="${rounded(hour.chance)} percent chance of precipitation">${rounded(hour.chance)}%</span></div>`).join('');
   $('daily').innerHTML = days.map((day,i) => {
     const name = i === 0 && !saved ? 'Today' : localTime(day.time,{weekday:'short'});
@@ -94,6 +80,7 @@ let nextRefresh;
 let lastAttempt = 0;
 function clearForecast() {
   lastWeather = null;
+  document.querySelector('main').dataset.period = 'day';
   for (const id of ['current-temp','high','low','feels','rain-value','wind-value','wind-direction','gust-value','uv-value','uv-label','sunrise','sunset']) $(id).textContent = '—';
   setValues({'current-title':'Loading weather…', 'rain-note':'Next 12 hours', 'wind-status':'Loading wind…', hourly:'Loading hourly forecast…', daily:'Loading daily forecast…'});
   $('rain-meter').style.width = '0%';
@@ -161,4 +148,5 @@ window.addEventListener('online', loadWeather);
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden && Date.now() - lastAttempt >= 60_000) loadWeather();
 });
+clearForecast();
 loadWeather();

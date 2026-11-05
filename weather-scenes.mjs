@@ -1,5 +1,5 @@
 // All weather codes currently documented by Open-Meteo, including code 97.
-// Each code has its own static day/night scene and temperature-strip asset.
+// Each code has its own composable weather layer over a shared day/night landscape.
 export const WEATHER_CONDITIONS = Object.freeze([
   {code:0, label:'Clear skies', kind:'clear', intensity:0, icon:'sun'},
   {code:1, label:'Mostly clear', kind:'mostly-clear', intensity:0, icon:'sun'},
@@ -37,8 +37,18 @@ export function backgroundAssets(code, isDay = true) {
   const key = known ? `wmo-${String(code).padStart(2,'0')}` : 'unknown';
   const variant = isDay ? 'day' : 'night';
   return {
-    landscape:`./assets/weather/${key}-${variant}-scene.svg`,
-    temperature:`./assets/weather/${key}-${variant}-temperature.svg`,
+    landscape:`./assets/landscape/pnw-${variant}.jpg`,
+    atmosphere:`./assets/weather/${key}-${variant}-weather.svg`,
   };
 }
-export const BACKGROUND_FILES = Object.freeze([...WEATHER_CONDITIONS.map(item=>item.code), null].flatMap(code=>[true,false].flatMap(day=>Object.values(backgroundAssets(code,day)).map(path=>path.slice(2)))));
+export const BACKGROUND_FILES = Object.freeze([...new Set([...WEATHER_CONDITIONS.map(item=>item.code), null].flatMap(code=>[true,false].flatMap(day=>Object.values(backgroundAssets(code,day)).map(path=>path.slice(2)))))]);
+
+export function weatherIconType(code, isDay = true) {
+  const item = typeof code === 'number' ? WEATHER_BY_CODE[code] : null;
+  if (!item) return 'unknown';
+  if (code === 0) return isDay ? 'sun' : 'moon';
+  if (code === 1 || code === 2) return isDay ? 'partly-cloudy' : 'partly-cloudy-night';
+  if (item.kind.startsWith('freezing') && !item.kind.includes('fog')) return 'freezing-rain';
+  if (item.kind === 'hail') return 'hail';
+  return item.icon;
+}
