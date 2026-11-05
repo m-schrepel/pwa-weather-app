@@ -6,3 +6,5 @@
 node_modules/
 dist/
 artifacts/
+
+generated_images/

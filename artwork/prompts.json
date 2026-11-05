@@ -14,5 +14,21 @@
     "references": [
       "Generated moss-bay-day illustration"
     ]
+  },
+  {
+    "id": "moss-bay-day-dock-removal",
+    "tool": "built-in image_gen",
+    "prompt": "Use case: precise-object-edit. Edit the supplied original watercolor-and-pencil weather-app background. Remove ONLY the wooden dock/pier extending from the left toward the center, including its railing, all wooden pilings and their reflections. Fill that narrow area seamlessly with continuous lake water and fine watercolor ripples matching the surrounding water. Keep the small white boats and their masts at the far left edge. Keep EXACT portrait 1024x1536 framing, horizon height, distant low shoreline and buildings, foreground curved concrete seawall, boulders, grass, water texture, empty sky, existing lighting and palette. No new objects, no weather objects, no text, no UI. Preserve all unaffected areas as closely as possible; do not redesign the scene or move the shoreline. The result should simply have open lake water where the dock was. This is the day canvas; preserve its pale daylight lighting exactly.",
+    "references": [
+      "Original assets/landscape/pnw-day.jpg before dock removal"
+    ]
+  },
+  {
+    "id": "moss-bay-night-dock-removal",
+    "tool": "built-in image_gen",
+    "prompt": "Use case: precise-object-edit. Edit the supplied original watercolor-and-pencil weather-app background. Remove ONLY the wooden dock/pier extending from the left toward the center, including its railing, all wooden pilings and their reflections. Fill that narrow area seamlessly with continuous lake water and fine watercolor ripples matching the surrounding water. Keep the small white boats and their masts at the far left edge. Keep EXACT portrait 1024x1536 framing, horizon height, distant low shoreline and buildings, foreground curved concrete seawall, boulders, grass, water texture, empty sky, existing lighting and palette. No new objects, no weather objects, no text, no UI. Preserve all unaffected areas as closely as possible; do not redesign the scene or move the shoreline. The result should simply have open lake water where the dock was. This is the night canvas; preserve its deep blue nighttime lighting exactly.",
+    "references": [
+      "Original assets/landscape/pnw-night.jpg before dock removal"
+    ]
   }
 ]

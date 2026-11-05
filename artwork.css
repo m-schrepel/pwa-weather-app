@@ -4,8 +4,15 @@ body{background:#e9e5d9}
 .weather-app{color:var(--ink)}
 .current{background:var(--bg)}
 .current .landscape{z-index:-3}
-.landscape::after{display:none}
 .landscape img{image-rendering:auto}
+/* Weather lighting affects the whole painting beneath the dashboard. */
+.landscape{isolation:isolate;--scene-tint:#82b4af;--scene-opacity:.06}
+.landscape::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:var(--scene-tint);opacity:var(--scene-opacity);mix-blend-mode:multiply}
+.landscape::after{display:none}
+.weather-app[data-weather="cloudy"] .landscape{--scene-tint:#81929d;--scene-opacity:.25}
+.weather-app[data-overcast="true"] .landscape{--scene-tint:#6b7e8d;--scene-opacity:.38}
+.weather-app[data-weather="rain"] .landscape{--scene-tint:#506966;--scene-opacity:.42}
+.weather-app[data-period="night"] .landscape{--scene-tint:#203751;--scene-opacity:.15}
 .weather-layer{position:absolute;inset:0;z-index:-2;pointer-events:none}
 .weather-layer img{display:block;width:100%;height:100%;object-fit:cover}
 .current::before,.weather-app[data-period="day"] .current::before{background:linear-gradient(180deg,#fffbed9c,#fffbed45 38%,#fffbed10 70%,#fffbed65)}
