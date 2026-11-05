@@ -51,7 +51,7 @@ function renderWeather(data) {
   $('rain-meter').style.width = `${outlook.chance ?? 0}%`;
   $('rain-card').title = 'Maximum hourly precipitation probability in the next 12 hours';
   renderBackgrounds(c.code, c.isDay);
-  $('landscape').setAttribute('aria-label', `Watercolor illustration: ${view.label.toLowerCase()} over a Pacific Northwest lake`);
+  $('landscape').setAttribute('aria-label', `Watercolor illustration: ${view.label.toLowerCase()} over Moss Bay from the Marina Park pavilion area in Kirkland`);
   $('hourly').innerHTML = hours.map((hour,i) => `<div class="hour"><span class="time">${i === 0 && !saved ? 'NOW' : localTime(hour.time,{hour:'numeric'}).replace(' ','')}</span>${icon(condition(hour.code,hour.isDay).icon)}<span class="hour-temp">${rounded(hour.temp)}°</span><span class="rain-chance" aria-label="${rounded(hour.chance)} percent chance of precipitation">${rounded(hour.chance)}%</span></div>`).join('');
   $('daily').innerHTML = days.map((day,i) => {
     const name = i === 0 && !saved ? 'Today' : localTime(day.time,{weekday:'short'});
