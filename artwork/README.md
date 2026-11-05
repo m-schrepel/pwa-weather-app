@@ -14,4 +14,3 @@ The exact standing position and camera bearing inside the pavilion are not verif
 Reference photo bytes remain in ignored local research artifacts and are not included in the application or review deliverable. The generated art synthesizes the geographic features in the previously approved original watercolor treatment. Exact built-in image-generation/editing prompts are in `prompts.json`; the night canvas was derived from the new day canvas to retain the same geometry.
 
 The JPEG filenames are unchanged for compatibility with the existing resolver. Their skies remain intentionally empty: sun/moon, stars, cloud, fog and precipitation stay in the original separate static layers. Both the information layout and weather/day-night behavior remain unchanged. The backdrop is a fixed personal illustration; the app still uses the forecast location and device coordinates for weather data.
-
