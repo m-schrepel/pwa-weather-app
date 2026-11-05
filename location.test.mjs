@@ -5,7 +5,23 @@ import vm from 'node:vm';
 import * as weather from './weather.mjs';
 import { backgroundAssets } from './weather-scenes.mjs';
 import { icon } from './weather-icons.mjs';
-import { detectLocation, coordinateLabel, FALLBACK_LOCATION } from './location.mjs';
+import { detectLocation, coordinateLabel, cityName, FALLBACK_LOCATION } from './location.mjs';
+
+test('city lookup uses device coordinates and handles locality, missing names and failures', async () => {
+  const location = {latitude:47.716, longitude:-122.211};
+  const lookup = data => cityName(location, async (url, options) => {
+    assert.equal(new URL(url).searchParams.get('latitude'), '47.716');
+    assert.equal(new URL(url).searchParams.get('longitude'), '-122.211');
+    assert.equal(options.credentials, 'omit');
+    return {ok:true, json:async () => data};
+  });
+  assert.equal(await lookup({city:'Kirkland', principalSubdivision:'Washington'}), 'Kirkland, Washington');
+  assert.equal(await lookup({city:'', locality:'Redmond'}), 'Redmond');
+  assert.equal(await lookup({city:'Tokyo', principalSubdivision:'Tokyo'}), 'Tokyo');
+  assert.equal(await lookup({}), null);
+  assert.equal(await cityName(location, async () => ({ok:false})), null);
+  assert.equal(await cityName(location, async () => { throw new Error('offline'); }), null);
+});
 
 test('device location is validated, rounded, and requested with bounded battery-friendly options', async () => {
   let options;
@@ -46,7 +62,7 @@ test('both weather APIs use device coordinates and timezone; invalid coordinates
 
 const now = Date.now() / 1000;
 const forecast = timezone => ({timezone, current:{time:now, temperature_2m:55, is_day:1}, hourly:{time:[now]}, daily:{time:[now]}});
-async function appHarness(detected) {
+async function appHarness(detected, lookup = async () => null) {
   const elements = new Map();
   const element = id => {
     if (!elements.has(id)) elements.set(id, {textContent:'', dataset:{}, style:{}, setAttribute(){}, removeAttribute(){}, addEventListener(){}, querySelector(){return {src:''};}});
@@ -55,7 +71,7 @@ async function appHarness(detected) {
   const requests = [];
   let detection = detected, broken = false;
   const context = vm.createContext({...weather, backgroundAssets, icon, formatLocalTime:weather.localTime, formatClockTime:weather.clockTime,
-    detectLocation:async () => detection, coordinateLabel, FALLBACK_LOCATION,
+    detectLocation:async () => detection, coordinateLabel, cityName:lookup, FALLBACK_LOCATION,
     fetchJson:async url => {
       requests.push(new URL(url));
       if (broken) throw new Error('offline');
@@ -92,4 +108,16 @@ test('home screen falls back explicitly, retries device location, and clears old
   await app.refresh({error:'Location request timed out.'});
   assert.equal(app.element('location-name').textContent, 'Last known location');
   assert.equal(app.requests.at(-1).searchParams.get('longitude'), '-74.006');
+});
+
+test('city replaces coordinates, survives failed fixes, and never leaks into a new location', async () => {
+  const app = await appHarness({location:{latitude:35.676, longitude:139.65, timezone:'auto'}}, async location => location.latitude === 35.676 ? 'Tokyo' : null);
+  assert.equal(app.element('location-name').textContent, 'Tokyo');
+  assert.equal(app.element('location-detail').textContent, 'Current location');
+  await app.refresh({error:'Location request timed out.'});
+  assert.equal(app.element('location-name').textContent, 'Tokyo');
+  assert.match(app.element('location-detail').textContent, /last detected location/);
+  await app.refresh({location:{latitude:40.713, longitude:-74.006, timezone:'auto'}});
+  assert.equal(app.element('location-name').textContent, 'Current location');
+  assert.match(app.element('location-detail').textContent, /40.713° N/);
 });
