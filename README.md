@@ -34,7 +34,7 @@ Weather attribution: [Open-Meteo](https://open-meteo.com/). Air-quality attribut
 
 ## Design and scope
 
-Watercolor-and-pencil style; a full-screen Pacific Northwest lake scene with current weather, detail cards, and a horizontally scrolling five-day forecast. Hourly weather and a plain sunrise/sunset time row are included in the same opening overview. The location row sits above current conditions. There is no footer or setup section. Short screens and larger text can grow the page to avoid clipping data.
+Watercolor-and-pencil style; a full-screen Moss Bay view interpreted from the Marina Park pavilion area in Kirkland with current weather, detail cards, and a horizontally scrolling five-day forecast. Hourly weather and a plain sunrise/sunset time row are included in the same opening overview. The location row sits above current conditions. There is no footer or setup section. Short screens and larger text can grow the page to avoid clipping data.
 
 No ads, analytics, login, settings screen, radar, alerts, or push notifications. Device location requires browser permission and HTTPS (or localhost during development).
 
@@ -63,7 +63,7 @@ Regenerate icons with `python3 scripts/generate-icons.py`, then rebuild. This re
 
 Review locally at http://127.0.0.1:4173/backgrounds.html. This development gallery is excluded from `docs/` and the production cache. Filters show condition families and day/night; each scene links to its landscape JPEG and transparent weather SVG.
 
-`assets/landscape/` contains two original 1024 × 1536 watercolor-and-pencil Pacific Northwest lake canvases, optimized as JPEGs. Both have quiet, empty skies. The same fir-covered slopes, ferns, mossy shoreline and wooden landing stay in place while the weather changes. `artwork/` records the generation prompts and design notes. The launcher icons retain their existing pixel artwork.
+`assets/landscape/` contains two original 1024 × 1536 watercolor-and-pencil Pacific Northwest lake canvases, optimized as JPEGs. Both have quiet, empty skies. The same low distant urban shoreline, left-side marina and pier, open water and curved foreground seawall stay in place while the weather changes. The view is an informed interpretation of the west-facing pavilion area, not an exact surveyed camera position. `artwork/` records the generation prompts and design notes. The launcher icons retain their existing pixel artwork.
 
 `weather-scenes.mjs` is the shared condition catalog and allowlisted resolver. `backgroundAssets(code, isDay)` returns a shared day/night landscape and the matching transparent atmosphere layer. Unknown codes use an empty weather layer rather than inventing conditions. `scripts/generate-backgrounds.mjs` builds 60 lightweight SVG layers: 29 codes plus fallback, each by day and night. Sun, moon/stars, organic cloud washes, fog bands, drizzle/rain, snow/grains, freezing precipitation, static lightning and hail compose according to the existing code and intensity. Showers have gaps and heavier precipitation has denser marks. Moon shape and edge frost are illustrative; the artwork does not claim measured moon phase, ground ice or snow depth. There is no snowfall accumulation on the base image.
 
