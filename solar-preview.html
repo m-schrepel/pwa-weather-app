@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>A clear day on Moss Bay</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./solar-preview.css">
+  <script type="module" src="./solar-preview.mjs"></script>
+</head>
+<body>
+  <main class="study">
+    <section class="painting" id="painting" aria-label="Clear-day light over Moss Bay">
+      <div class="scene" aria-hidden="true">
+        <img class="night" src="./assets/landscape/pnw-night.jpg" alt="">
+        <img class="day" src="./assets/landscape/pnw-day.jpg" alt="">
+        <div class="warm-wash"></div>
+        <div class="horizon-glow"></div>
+      </div>
+      <header class="scene-caption"><span>CLEAR SKY STUDY</span><span>KIRKLAND, WA</span></header>
+      <div class="scene-time"><p id="phase">Clear day</p><h1 id="scene-clock">—</h1><p id="sun-location">Calculating the sun…</p></div>
+      <footer class="scene-footer">Moss Bay · looking west <span>270°</span></footer>
+    </section>
+    <aside class="controls" aria-label="Solar lighting controls">
+      <p class="eyebrow">LIGHT THROUGH THE DAY</p>
+      <h2>A clear day <br>on Moss Bay.</h2>
+      <p class="intro">Drag the sun through the day. The painting follows its height and direction, from soft morning light to a warm western sunset.</p>
+      <label class="date-label" for="study-date">Explore a date <input id="study-date" type="date" value="2026-11-05" min="1901-01-01" max="2099-12-31"></label>
+      <div class="scrubber">
+        <div class="time-heading"><label for="day-slider">Time of day</label><output id="clock" for="day-slider">—</output></div>
+        <input id="day-slider" type="range" min="0" max="1000" step="1" value="500" aria-describedby="slider-help">
+        <div class="ends"><span>Sunrise <b id="rise">—</b></span><span>Sunset <b id="set">—</b></span></div>
+        <p id="slider-help">Arrow keys fine-tune the time; Home and End jump to sunrise and sunset.</p>
+      </div>
+      <div class="presets"><button data-moment="sunrise">Sunrise</button><button data-moment="noon">Solar noon</button><button data-moment="sunset">Sunset</button></div>
+      <svg class="sun-path" viewBox="0 0 300 100" role="img" aria-label="Sun elevation from sunrise to sunset"><path class="baseline" d="M10 86H290"/><path id="day-arc"/><circle id="arc-dot" r="5"/><text x="10" y="99">EAST</text><text x="257" y="99">WEST</text></svg>
+      <dl class="readings"><div><dt>Sun elevation</dt><dd id="elevation">—</dd></div><div><dt>Compass bearing</dt><dd id="azimuth">—</dd></div><div><dt>Daylight blend</dt><dd id="blend">—</dd></div></dl>
+      <p class="view-note" id="view-note"></p>
+      <details><summary>How the light works</summary><p>Sun angles use latitude, longitude, date and UTC time, following <a href="https://gml.noaa.gov/grad/solcalc/calcdetails.html">NOAA solar equations</a>. Sunrise and sunset use the conventional −0.833° solar-center horizon. Times use America/Los_Angeles, including daylight saving.</p><p>Brightness, warmth and the blend between day and night paintings are artistic curves driven by sun elevation, not measured illuminance. The horizon glow follows the sun’s compass bearing in an illustrative west-facing view; no sun disc is drawn. The painting’s camera calibration, terrain occlusion and weather are not modeled.</p></details>
+      <p class="experiment">Local experiment · clear skies · no live weather or location requests</p>
+      <p id="error" role="alert" hidden></p>
+    </aside>
+  </main>
+</body>
+</html>

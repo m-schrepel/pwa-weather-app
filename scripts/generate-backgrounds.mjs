@@ -11,10 +11,11 @@ function cloud(x,y,scale,day,dark=false){
 }
 function sky(item,day){
   const parts=[],open=['clear','mostly-clear','partly-cloudy'].includes(item.kind);
-  if(item.kind==='overcast'){
+  const wet=['rain','rain-showers','drizzle','freezing-rain','freezing-drizzle','thunderstorm','hail'].includes(item.kind);
+  if(item.kind==='overcast'||wet){
     // A continuous stratus ceiling with broad, soft washes, not cloud silhouettes.
-    const ceiling=day?'#9ca9ad':'#304653',shade=day?'#657b87':'#172c3b';
-    return `<defs><linearGradient id="blanket" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="440"><stop stop-color="${ceiling}" stop-opacity=".98"/><stop offset=".62" stop-color="${ceiling}" stop-opacity=".96"/><stop offset=".82" stop-color="${ceiling}" stop-opacity=".85"/><stop offset="1" stop-color="${ceiling}" stop-opacity="0"/></linearGradient><linearGradient id="stratus" x1="0" y1="0" x2="0" y2="1"><stop stop-color="${shade}" stop-opacity="0"/><stop offset=".5" stop-color="${shade}" stop-opacity=".12"/><stop offset="1" stop-color="${shade}" stop-opacity="0"/></linearGradient></defs><g data-layer="cloud-cover"><path d="M0 0H320V440H0Z" fill="url(#blanket)"/></g><g data-layer="clouds" data-coverage="overcast"><path d="M-20 28Q85 8 180 36T340 22V118Q230 136 130 112T-20 124Z" fill="url(#stratus)"/><path d="M-20 138Q90 158 180 139T340 152V253Q240 234 140 254T-20 240Z" fill="url(#stratus)"/><path d="M-20 273Q100 250 210 275T340 263V359Q235 380 135 357T-20 370Z" fill="url(#stratus)"/></g>`;
+    const ceiling=day?(wet?'#87999f':'#9ca9ad'):(wet?'#283e4b':'#304653'),shade=day?'#657b87':'#172c3b';
+    return `<defs><linearGradient id="blanket" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="440"><stop stop-color="${ceiling}" stop-opacity=".98"/><stop offset=".62" stop-color="${ceiling}" stop-opacity=".96"/><stop offset=".82" stop-color="${ceiling}" stop-opacity=".85"/><stop offset="1" stop-color="${ceiling}" stop-opacity="0"/></linearGradient><linearGradient id="stratus" x1="0" y1="0" x2="0" y2="1"><stop stop-color="${shade}" stop-opacity="0"/><stop offset=".5" stop-color="${shade}" stop-opacity=".12"/><stop offset="1" stop-color="${shade}" stop-opacity="0"/></linearGradient></defs><g data-layer="cloud-cover"><path d="M0 0H320V440H0Z" fill="url(#blanket)"/></g><g data-layer="clouds" data-coverage="${wet?'rain':'overcast'}"><path d="M-20 28Q85 8 180 36T340 22V118Q230 136 130 112T-20 124Z" fill="url(#stratus)"/><path d="M-20 138Q90 158 180 139T340 152V253Q240 234 140 254T-20 240Z" fill="url(#stratus)"/><path d="M-20 273Q100 250 210 275T340 263V359Q235 380 135 357T-20 370Z" fill="url(#stratus)"/></g>`;
   }
   if(open){
     if(day)parts.push('<g data-layer="sun"><circle cx="260" cy="95" r="25" fill="#eed38c" opacity=".2"/><circle cx="260" cy="95" r="18" fill="#e9c76b" opacity=".65"/><path d="M244 98C241 75 279 72 277 96C277 119 243 116 244 98Z" fill="none" stroke="#9e8a55" stroke-width=".6" opacity=".5"/></g>');
@@ -32,16 +33,17 @@ function sky(item,day){
 function precipitation(item,day){
   const snow=item.kind.startsWith('snow'),ice=item.kind.startsWith('freezing')&&!item.kind.includes('fog'),storm=['thunderstorm','hail'].includes(item.kind),rain=ice||storm||['rain','rain-showers','drizzle'].includes(item.kind);
   if(!snow&&!rain)return '';
-  const count=20*(item.intensity||1),ink=day?'#607f91':'#adc6d1';
+  const drizzle=item.kind.includes('drizzle');
+  const count=(snow?20:drizzle?45:60)*(item.intensity||1),ink=day?'#526f83':'#adc6d1';
   let marks='';
   for(let i=0;i<count;i++){
-    const x=(i*71+19)%320,y=130+(i*47+item.code*3)%535;
-    if(item.kind.includes('showers')&&x>105&&x<175)continue;
+    const x=(i*71+19)%320,y=(snow?130:45)+(i*47+item.code*3)%(snow?535:620);
+    if(item.kind.includes('showers')&&x>130&&x<155)continue;
     if(snow){
       marks+=item.kind==='snow-grains'?`<circle cx="${x}" cy="${y}" r="1.2" fill="#faf9eb" opacity=".8"/>`:`<path d="M${x-2} ${y}h4m-2-2v4m-1.5-3.5 3 3m0-3-3 3" stroke="#f9f8eb" stroke-width=".9" stroke-linecap="round" opacity=".9"/>`;
     }else{
-      const drizzle=item.kind.includes('drizzle'),length=drizzle?2:4+item.intensity*2;
-      marks+=`<path d="m${x} ${y} -1.8 ${length}" stroke="${ink}" stroke-width="${drizzle?.6:.8}" stroke-linecap="round" opacity=".55"/>`;
+      const length=drizzle?3:6+item.intensity*3;
+      marks+=`<path d="m${x} ${y} -1.8 ${length}" opacity="${i%3===0?.4:.7}"/>`;
       if(ice&&i%3===0)marks+=`<path d="m${x+3} ${y+7} 1.5 2-1.5 2-1.5-2Z" fill="#e1edf0" stroke="${ink}" stroke-width=".4"/>`;
     }
   }
@@ -51,7 +53,7 @@ function precipitation(item,day){
     if(item.intensity===3)extra+='<path d="m41 308-9 17h7l-9 18 20-22h-9l7-13Z" fill="#d6d8b8" opacity=".5"/>';
     if(item.kind==='hail')extra+=`<g data-layer="hail">${Array.from({length:12*item.intensity},(_,i)=>`<path d="m${(i*43+25)%310} ${340+(i*19)%310} 2 2-2 3-2-3Z" fill="#f0f3e6" stroke="${ink}" stroke-width=".45" opacity=".85"/>`).join('')}</g>`;
   }
-  return `<g data-layer="${snow?'snow':ice?'ice':'rain'}" data-intensity="${item.intensity}">${marks}</g>${extra}`;
+  return `<g data-layer="${snow?'snow':ice?'ice':'rain'}" data-intensity="${item.intensity}"${rain?` fill="none" stroke="${ink}" stroke-width="${drizzle?.6:.8}" stroke-linecap="round"`: ''}>${marks}</g>${extra}`;
 }
 function fog(item,day){
   if(!item.kind.includes('fog'))return '';
