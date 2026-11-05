@@ -1,10 +1,11 @@
 import { icon } from './weather-icons.mjs';
 import { backgroundAssets } from './weather-scenes.mjs';
 import { finite, rounded, localTime as formatLocalTime, clockTime as formatClockTime, condition, uvCategory, aqiCategory, normalizeForecast, weatherUrl, airQualityUrl, fetchJson } from './weather.mjs';
-import { detectLocation, coordinateLabel, FALLBACK_LOCATION } from './location.mjs';
+import { detectLocation, coordinateLabel, cityName, FALLBACK_LOCATION } from './location.mjs';
 const $ = (id) => document.getElementById(id);
 let activeLocation = FALLBACK_LOCATION;
 let forecastTimezone = FALLBACK_LOCATION.timezone;
+let namedLocation = null;
 const localTime = (time, options) => formatLocalTime(time, options, forecastTimezone);
 const clockTime = time => formatClockTime(time, forecastTimezone);
 
@@ -103,11 +104,22 @@ async function loadWeather() {
     activeLocation = next;
   }
   const isDevice = !activeLocation.name;
-  $('location-name').textContent = isDevice ? detected.error ? 'Last known location' : 'Current location' : activeLocation.name;
+  const locationKey = `${activeLocation.latitude},${activeLocation.longitude}`;
+  const city = namedLocation?.key === locationKey ? namedLocation.name : null;
+  $('location-name').textContent = city || (isDevice ? detected.error ? 'Last known location' : 'Current location' : activeLocation.name);
   $('location-detail').textContent = detected.error
     ? `${detected.error} ${isDevice ? 'Using the last detected location.' : 'Showing Kirkland as a fallback.'}`
-    : coordinateLabel(activeLocation);
-  document.title = `${isDevice ? 'Current location' : activeLocation.name} · Weather`;
+    : city ? 'Current location' : coordinateLabel(activeLocation);
+  document.title = `${city || (isDevice ? 'Current location' : activeLocation.name)} · Weather`;
+  if (detected.location && !city) {
+    void cityName(activeLocation).then(name => {
+      if (!name || `${activeLocation.latitude},${activeLocation.longitude}` !== locationKey) return;
+      namedLocation = {key:locationKey, name};
+      $('location-name').textContent = name;
+      $('location-detail').textContent = 'Current location';
+      document.title = `${name} · Weather`;
+    });
+  }
   $('data-status').textContent = 'UPDATING';
   $('data-status').removeAttribute('aria-label');
   $('load-message').textContent = `Fetching weather for ${isDevice ? 'your location' : activeLocation.name}…`;
