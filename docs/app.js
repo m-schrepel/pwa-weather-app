@@ -43,6 +43,7 @@ function renderWeather(data) {
   const saved = data.saved || Date.now() / 1000 - c.time > 3 * 3600;
   document.querySelector('main').dataset.weather = mode;
   document.querySelector('main').dataset.period = c.isDay ? 'day' : 'night';
+  document.querySelector('main').dataset.overcast = String(c.code === 3);
   setValues({
     'current-title':view.label, 'current-temp':rounded(c.temp), high:`${rounded(days[0].high)}°`, low:`${rounded(days[0].low)}°`, feels:`${rounded(c.feels)}°`,
     'rain-value':rounded(outlook.chance), 'rain-note':saved ? `Saved: ${outlook.note.toLowerCase()}` : outlook.note, 'wind-value':rounded(c.wind), 'wind-direction':c.direction, 'gust-value':`${rounded(c.gust)} mph`,
@@ -82,6 +83,7 @@ let lastAttempt = 0;
 function clearForecast() {
   lastWeather = null;
   document.querySelector('main').dataset.period = 'day';
+  document.querySelector('main').dataset.overcast = 'false';
   for (const id of ['current-temp','high','low','feels','rain-value','wind-value','wind-direction','gust-value','uv-value','uv-label','sunrise','sunset']) $(id).textContent = '—';
   setValues({'current-title':'Loading weather…', 'rain-note':'Next 12 hours', 'wind-status':'Loading wind…', hourly:'Loading hourly forecast…', daily:'Loading daily forecast…'});
   $('rain-meter').style.width = '0%';
