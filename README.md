@@ -74,3 +74,5 @@ The landscape and atmosphere are separate image elements, so changing weather do
 Tests verify all weather codes and both periods, correct layer combinations, no sun in overcast/rain/night art, moon and stars for open night skies, intensity differences, safe unknown inputs, complete offline coverage, and source/docs parity. All generated SVGs are XML-validated during development. Run the four test files listed above after rebuilding.
 
 The location control is a native button with a crosshair SVG, a transparent 44 × 44 CSS-pixel hit target, a visible keyboard focus ring, an accessible name and a tooltip. It keeps the existing permission, loading and retry behavior.
+
+Overcast (weather code 3) uses a continuous stratus blanket with subtle broad shading across the sky and a page-wide, non-interactive gray wash to subdue the entire dashboard (17% by day, 10% by night). Other weather codes retain their existing lighting.

@@ -24,3 +24,7 @@ body{background:#e9e5d9}
 .weather-app[data-period="night"] .metric,.weather-app[data-period="night"] .hour,.weather-app[data-period="night"] .day-card{background:#1e3442ed;border-color:#b8c7c366}
 .weather-app[data-period="night"] .metrics,.weather-app[data-period="night"] .status-bar,.weather-app[data-period="night"] .sun-summary{border-color:#b8c7c366}
 .weather-app[data-period="night"] .weather-icon{color:#e7e8d5}
+
+/* A quiet, page-wide gray wash gives overcast days their subdued light. */
+.weather-app[data-overcast="true"] .current::after{content:'';position:absolute;inset:0;z-index:2;background:#142330;opacity:.17;pointer-events:none}
+.weather-app[data-overcast="true"][data-period="night"] .current::after{opacity:.1}
