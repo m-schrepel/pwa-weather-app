@@ -9,8 +9,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Weather">
-  <meta name="description" content="A quiet, personal weather dashboard. Live Kirkland forecasts powered by Open-Meteo.">
-  <title>Kirkland · Weather</title>
+  <meta name="description" content="A quiet, personal weather dashboard. Local forecasts powered by Open-Meteo.">
+  <title>Local Weather</title>
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="apple-touch-icon" href="./icons/apple-touch-180.png">
@@ -22,8 +22,15 @@
   <a class="skip-link" href="#forecast">Skip to forecast</a>
   <main class="weather-app" data-weather="cloudy">
     <section class="current" aria-labelledby="current-title">
-      <div class="landscape" id="landscape" role="img" aria-label="Pixel art of a cloudy afternoon over Lake Washington"></div>
+      <div class="landscape" id="landscape" role="img" aria-label="Pixel art of a cloudy afternoon over an illustrated lake"></div>
     <div class="status-bar"><span class="status-dot"></span><span id="data-status">LOADING WEATHER</span><span class="credits"><a href="https://open-meteo.com/" aria-label="Weather data by Open-Meteo">Open-Meteo</a> · <a href="https://atmosphere.copernicus.eu/" aria-label="Air quality data by CAMS via Open-Meteo">CAMS</a></span></div>
+      <header class="location-header">
+        <div class="location-copy" role="status" aria-live="polite">
+          <p class="location-name" id="location-name">Your location</p>
+          <p class="location-detail" id="location-detail">Finding your location…</p>
+        </div>
+        <button type="button" class="location-button" id="use-location" aria-label="Use my current location">Use my location</button>
+      </header>
       <div class="current-copy">
         <div class="condition-backdrop" id="condition-backdrop" aria-hidden="true"></div>
         <h1 class="condition" id="current-title">Loading weather…</h1>
@@ -51,7 +58,7 @@
       <div><dt>Sunset</dt><dd id="sunset">—</dd></div>
     </dl>
     </section>
-    <p id="load-message" class="sr-only" role="status" aria-live="polite">Fetching Kirkland weather…</p>
+    <p id="load-message" class="sr-only" role="status" aria-live="polite">Finding your location…</p>
   </main>
 </body>
 </html>

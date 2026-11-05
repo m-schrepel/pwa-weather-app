@@ -1,6 +1,11 @@
 import { backgroundAssets } from './weather-scenes.mjs';
-import { finite, rounded, localTime, clockTime, condition, uvCategory, aqiCategory, normalizeForecast, weatherUrl, airQualityUrl, fetchJson } from './weather.mjs';
+import { finite, rounded, localTime as formatLocalTime, clockTime as formatClockTime, condition, uvCategory, aqiCategory, normalizeForecast, weatherUrl, airQualityUrl, fetchJson } from './weather.mjs';
+import { detectLocation, coordinateLabel, FALLBACK_LOCATION } from './location.mjs';
 const $ = (id) => document.getElementById(id);
+let activeLocation = FALLBACK_LOCATION;
+let forecastTimezone = FALLBACK_LOCATION.timezone;
+const localTime = (time, options) => formatLocalTime(time, options, forecastTimezone);
+const clockTime = time => formatClockTime(time, forecastTimezone);
 
 
 function icon(type) {
@@ -45,6 +50,7 @@ function setValues(values) {
   for (const [id, value] of Object.entries(values)) $(id).textContent = value;
 }
 function renderWeather(data) {
+  forecastTimezone = data.timezone;
   const {current:c, hours, days, outlook} = data;
   const view = condition(c.code, c.isDay), mode = view.scene;
   const saved = data.saved || Date.now() / 1000 - c.time > 3 * 3600;
@@ -59,7 +65,7 @@ function renderWeather(data) {
   $('rain-meter').style.width = `${outlook.chance ?? 0}%`;
   $('rain-card').title = 'Maximum hourly precipitation probability in the next 12 hours';
   renderBackgrounds(c.code, c.isDay);
-  $('landscape').setAttribute('aria-label', `Pixel art: ${view.label.toLowerCase()} over Lake Washington`);
+  $('landscape').setAttribute('aria-label', `Pixel art: ${view.label.toLowerCase()} over an illustrated lake`);
   $('hourly').innerHTML = hours.map((hour,i) => `<div class="hour"><span class="time">${i === 0 && !saved ? 'NOW' : localTime(hour.time,{hour:'numeric'}).replace(' ','')}</span>${icon(condition(hour.code,hour.isDay).icon)}<span class="hour-temp">${rounded(hour.temp)}°</span><span class="rain-chance" aria-label="${rounded(hour.chance)} percent chance of precipitation">${rounded(hour.chance)}%</span></div>`).join('');
   $('daily').innerHTML = days.map((day,i) => {
     const name = i === 0 && !saved ? 'Today' : localTime(day.time,{weekday:'short'});
@@ -86,20 +92,44 @@ let lastWeather = null;
 let loading = false;
 let nextRefresh;
 let lastAttempt = 0;
+function clearForecast() {
+  lastWeather = null;
+  for (const id of ['current-temp','high','low','feels','rain-value','wind-value','wind-direction','gust-value','uv-value','uv-label','sunrise','sunset']) $(id).textContent = '—';
+  setValues({'current-title':'Loading weather…', 'rain-note':'Next 12 hours', 'wind-status':'Loading wind…', hourly:'Loading hourly forecast…', daily:'Loading daily forecast…'});
+  $('rain-meter').style.width = '0%';
+  document.querySelector('.uv-meter').dataset.level = -1;
+  renderAirQuality(null);
+  renderBackgrounds(null, true);
+}
+
 async function loadWeather() {
   if (loading || document.hidden) return;
   clearTimeout(nextRefresh);
   loading = true;
   lastAttempt = Date.now();
+  $('use-location').disabled = true;
+  $('location-detail').textContent = 'Finding your location…';
+  const detected = await detectLocation();
+  if (detected.location) {
+    const next = detected.location;
+    if (next.latitude !== activeLocation.latitude || next.longitude !== activeLocation.longitude) clearForecast();
+    activeLocation = next;
+  }
+  const isDevice = !activeLocation.name;
+  $('location-name').textContent = isDevice ? detected.error ? 'Last known location' : 'Current location' : activeLocation.name;
+  $('location-detail').textContent = detected.error
+    ? `${detected.error} ${isDevice ? 'Using the last detected location.' : 'Showing Kirkland as a fallback.'}`
+    : coordinateLabel(activeLocation);
+  document.title = `${isDevice ? 'Current location' : activeLocation.name} · Weather`;
   $('data-status').textContent = 'UPDATING';
   $('data-status').removeAttribute('aria-label');
-  $('load-message').textContent = 'Fetching Kirkland weather…';
+  $('load-message').textContent = `Fetching weather for ${isDevice ? 'your location' : activeLocation.name}…`;
   let pulledAt;
   const [weather, air] = await Promise.allSettled([
-    fetchJson(weatherUrl()).then(data => {
+    fetchJson(weatherUrl(activeLocation)).then(data => {
       pulledAt = Date.now() / 1000;
       return normalizeForecast(data);
-    }), fetchJson(airQualityUrl()),
+    }), fetchJson(airQualityUrl(activeLocation)),
   ]);
   if (weather.status === 'fulfilled') {
     lastWeather = weather.value;
@@ -107,10 +137,10 @@ async function loadWeather() {
     renderAirQuality(air.status === 'fulfilled' ? air.value : null);
     const age = Date.now() / 1000 - lastWeather.current.time;
     $('data-status').textContent = lastWeather.saved ? 'SAVED FORECAST' : age > 3 * 3600 ? 'OLDER FORECAST' : `FORECAST AS OF ${clockTime(pulledAt)}`;
-    const validTime = `Forecast valid ${localTime(lastWeather.current.time,{month:'short',day:'numeric',year:'numeric'})}, ${clockTime(lastWeather.current.time)} · Pacific time`;
+    const validTime = `Forecast valid ${localTime(lastWeather.current.time,{month:'short',day:'numeric',year:'numeric'})}, ${clockTime(lastWeather.current.time)} · ${forecastTimezone}`;
     $('data-status').title = validTime;
     $('data-status').setAttribute('aria-label', `${$('data-status').textContent}. ${validTime}`);
-    $('load-message').textContent = lastWeather.saved ? 'Showing a saved forecast. Updates resume when connected.' : air.status === 'fulfilled' && finite(air.value?.current?.us_aqi) !== null ? 'Kirkland forecast updated.' : 'Weather updated. Air quality is unavailable; retrying automatically.';
+    $('load-message').textContent = lastWeather.saved ? 'Showing a saved forecast. Updates resume when connected.' : air.status === 'fulfilled' && finite(air.value?.current?.us_aqi) !== null ? 'Local forecast updated.' : 'Weather updated. Air quality is unavailable; retrying automatically.';
   } else {
     $('data-status').textContent = 'UPDATE FAILED';
     $('load-message').textContent = lastWeather ? 'Could not refresh. Showing the previous forecast.' : 'Could not load weather. Updates will retry automatically.';
@@ -122,9 +152,11 @@ async function loadWeather() {
     }
   }
   loading = false;
+  $('use-location').disabled = false;
   nextRefresh = setTimeout(loadWeather, weather.status === 'fulfilled' && !lastWeather.saved && air.status === 'fulfilled' && finite(air.value?.current?.us_aqi) !== null ? 15 * 60_000 : 60_000);
 }
 document.querySelectorAll('[data-icon]').forEach(el => el.innerHTML = icon(el.dataset.icon));
+$('use-location').addEventListener('click', loadWeather);
 window.addEventListener('online', loadWeather);
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden && Date.now() - lastAttempt >= 60_000) loadWeather();

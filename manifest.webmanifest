@@ -2,7 +2,7 @@
   "id": "./",
   "name": "Weather",
   "short_name": "Weather",
-  "description": "Personal Kirkland weather, forecasts, and air quality in a quiet pixel dashboard.",
+  "description": "Local weather, forecasts, and air quality in a quiet pixel dashboard.",
   "lang": "en-US",
   "start_url": "./",
   "scope": "./",

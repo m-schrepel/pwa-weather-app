@@ -6,7 +6,7 @@ import { generateBackgrounds } from './scripts/generate-backgrounds.mjs';
 await generateBackgrounds();
 
 const assets = [
-  'index.html', 'styles.css', 'app.js', 'weather.mjs', 'pwa.mjs',
+  'index.html', 'styles.css', 'app.js', 'weather.mjs', 'location.mjs', 'pwa.mjs',
   'manifest.webmanifest', 'icon.svg', 'weather-scenes.mjs',
   ...BACKGROUND_FILES,
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png',
