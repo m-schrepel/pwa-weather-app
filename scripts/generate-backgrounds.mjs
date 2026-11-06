@@ -17,9 +17,9 @@ function sky(item,day){
     const ceiling=day?(wet?'#87999f':'#9ca9ad'):(wet?'#283e4b':'#304653'),shade=day?'#657b87':'#172c3b';
     return `<defs><linearGradient id="blanket" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="440"><stop stop-color="${ceiling}" stop-opacity=".98"/><stop offset=".62" stop-color="${ceiling}" stop-opacity=".96"/><stop offset=".82" stop-color="${ceiling}" stop-opacity=".85"/><stop offset="1" stop-color="${ceiling}" stop-opacity="0"/></linearGradient><linearGradient id="stratus" x1="0" y1="0" x2="0" y2="1"><stop stop-color="${shade}" stop-opacity="0"/><stop offset=".5" stop-color="${shade}" stop-opacity=".12"/><stop offset="1" stop-color="${shade}" stop-opacity="0"/></linearGradient></defs><g data-layer="cloud-cover"><path d="M0 0H320V440H0Z" fill="url(#blanket)"/></g><g data-layer="clouds" data-coverage="${wet?'rain':'overcast'}"><path d="M-20 28Q85 8 180 36T340 22V118Q230 136 130 112T-20 124Z" fill="url(#stratus)"/><path d="M-20 138Q90 158 180 139T340 152V253Q240 234 140 254T-20 240Z" fill="url(#stratus)"/><path d="M-20 273Q100 250 210 275T340 263V359Q235 380 135 357T-20 370Z" fill="url(#stratus)"/></g>`;
   }
-  if(open){
-    if(day)parts.push('<g data-layer="sun"><circle cx="260" cy="95" r="25" fill="#eed38c" opacity=".2"/><circle cx="260" cy="95" r="18" fill="#e9c76b" opacity=".65"/><path d="M244 98C241 75 279 72 277 96C277 119 243 116 244 98Z" fill="none" stroke="#9e8a55" stroke-width=".6" opacity=".5"/></g>');
-    else parts.push('<g data-layer="stars" fill="#f2df9b" opacity=".75"><circle cx="29" cy="65" r="1"/><circle cx="90" cy="30" r=".9"/><circle cx="183" cy="90" r="1"/><circle cx="298" cy="36" r=".9"/><circle cx="63" cy="213" r=".8"/></g><path data-layer="moon" d="M269 75C245 75 240 112 265 117C275 120 285 113 288 105C261 112 252 90 269 75Z" fill="#e9cc83" stroke="#b7af83" stroke-width=".5" opacity=".9"/>');
+  // The live scene uses solar lighting, without a decorative daytime sun orb.
+  if(open&&!day){
+    parts.push('<g data-layer="stars" fill="#f2df9b" opacity=".75"><circle cx="29" cy="65" r="1"/><circle cx="90" cy="30" r=".9"/><circle cx="183" cy="90" r="1"/><circle cx="298" cy="36" r=".9"/><circle cx="63" cy="213" r=".8"/></g><path data-layer="moon" d="M269 75C245 75 240 112 265 117C275 120 285 113 288 105C261 112 252 90 269 75Z" fill="#e9cc83" stroke="#b7af83" stroke-width=".5" opacity=".9"/>');
   }
   if(item.kind!=='clear'&&item.kind!=='unknown'){
     const count=item.kind==='mostly-clear'?1:item.kind==='partly-cloudy'?2:4;

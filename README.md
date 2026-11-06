@@ -40,7 +40,7 @@ No ads, analytics, login, settings screen, radar, alerts, or push notifications.
 
 ## Verification
 
-Run `node build.mjs`, then `node --test weather.test.mjs location.test.mjs pwa.test.mjs backgrounds.test.mjs`. Tests cover location permission errors, retries, coordinate validation, API location parameters, travel without stale weather, local timezone formatting, rain timing across midnight, missing values, probability thresholds, AQI/UV categories, condition codes, hourly selection, DST, request units, and HTTP errors. With no third-party packages there are no npm dependencies to audit.
+Run `node build.mjs`, then `node --test weather.test.mjs location.test.mjs pwa.test.mjs backgrounds.test.mjs solar.test.mjs`. Tests cover location permission errors, retries, coordinate validation, API location parameters, travel without stale weather, local timezone formatting, rain timing across midnight, missing values, probability thresholds, AQI/UV categories, condition codes, hourly selection, DST, request units, and HTTP errors. With no third-party packages there are no npm dependencies to audit.
 
 ## Install on your S24
 
@@ -83,8 +83,10 @@ Rain and drizzle use a continuous gray cloud ceiling and denser static raindrops
 
 ## Solar lighting experiment
 
-Open `http://127.0.0.1:4184/solar-preview.html` while serving the repository on port 4184. This local, clear-day study is separate from the production dashboard and excluded from the deployment build. It provides a sunrise-to-sunset slider, sunrise/noon/sunset presets, a seasonal date picker, and elevation/azimuth readouts for Kirkland (47.716, -122.211) in America/Los_Angeles. It starts on November 5, 2026.
+Open `http://127.0.0.1:4184/solar-preview.html` while serving the repository on port 4184. This local, clear-day slider study is excluded from the deployment build; its solar geometry and lighting curves also drive the production dashboard. It provides a sunrise-to-sunset slider, sunrise/noon/sunset presets, a seasonal date picker, and elevation/azimuth readouts for Kirkland (47.716, -122.211) in America/Los_Angeles. It starts on November 5, 2026.
 
 `solar.mjs` implements NOAA's Meeus-based solar geometry using Julian centuries, declination, equation of time, hour angle, and approximate atmospheric refraction. Sunrise/sunset are numerical crossings of geometric elevation −0.833°. Civil day boundaries use the named timezone with DST; days without horizon crossings return null events. A west-facing illustrative perspective places the warm horizon glow using solar bearing; no sun disc is drawn. The lighting curves blend the existing day/night canvases and adjust exposure and warmth; they estimate a visual mood, not measured lux, shadows, terrain visibility, or actual weather. No astronomy dependency, GPS request, or network API is needed.
 
 Validation: `node --test solar.test.mjs` checks a published NREL SPA reference example to within 0.1°, sunrise/sunset crossings, seasonal geometry, DST boundaries, polar no-rise/no-set cases, input validation and bounded lighting curves. Sources: [NOAA calculation details](https://gml.noaa.gov/grad/solcalc/calcdetails.html), [NREL SPA report, Appendix A5 reference example](https://docs.nlr.gov/docs/fy08osti/34302.pdf). The NOAA approximation is implemented independently; this is not the full NREL SPA algorithm or its licensed source code.
+
+The live dashboard uses `scene-lighting.mjs` with the current clock and active forecast coordinates to update sun-angle lighting every minute while visible and immediately on return. It blends both canvases, applies exposure and subdued dawn/dusk warmth, and combines the existing weather tint with the result. Overcast/rain reduce warmth; the moving sun orb is absent and no daytime orb is generated in weather backgrounds (small forecast icons still use sun symbols). Both solar modules and canvases are packaged and cached offline. Saved forecasts retain their explicit weather status while the lighting follows the actual time. Travel updates the lighting coordinates along with the forecast.

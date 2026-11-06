@@ -38,10 +38,10 @@ test('unknown and hostile inputs use a neutral layer without inventing weather',
   assert.doesNotMatch(unknown,/data-layer="(?:sun|moon|stars|clouds|rain|snow|fog|lightning)"/);
 });
 test('sun, moon and cloud composition follows each day/night sky state',async()=>{
-  for(const code of [...codes,null])assert.doesNotMatch(await readLayer(code,false),/data-layer="sun"/);
+  for(const code of [...codes,null])for(const day of [true,false])assert.doesNotMatch(await readLayer(code,day),/data-layer="sun"/);
   for(const code of [3,45,48,61,73,95])assert.doesNotMatch(await readLayer(code),/data-layer="sun|data-layer="moon|data-layer="stars/);
   const day=await readLayer(0),night=await readLayer(0,false);
-  assert.match(day,/data-layer="sun"/);assert.doesNotMatch(day,/data-layer="clouds"/);
+  assert.doesNotMatch(day,/data-layer="sun"/);assert.doesNotMatch(day,/data-layer="clouds"/);
   assert.match(night,/data-layer="moon"/);assert.match(night,/data-layer="stars"/);
   assert.match(await readLayer(2,false),/data-layer="clouds"/);
   assert.match(await readLayer(3,false),/data-layer="cloud-cover"/);
@@ -72,7 +72,7 @@ test('watercolor icons support all codes and periods, with distinct freezing-rai
 });
 test('every artwork asset and the icon renderer is available offline; review pages stay out',async()=>{
   const worker=await readFile('docs/sw.js','utf8');
-  for(const path of [...BACKGROUND_FILES,'weather-scenes.mjs','weather-icons.mjs','artwork.css'])assert.ok(worker.includes(`"${path}"`),path);
+  for(const path of [...BACKGROUND_FILES,'weather-scenes.mjs','weather-icons.mjs','artwork.css','solar.mjs','scene-lighting.mjs'])assert.ok(worker.includes(`"${path}"`),path);
   for(const path of ['backgrounds.html','gallery.css','gallery.mjs'])assert.ok(!worker.includes(`"${path}"`));
   assert.doesNotMatch(await readFile('artwork.css','utf8'),/animation\s*:|transition\s*:/i);
 });

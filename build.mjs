@@ -7,7 +7,7 @@ await generateBackgrounds();
 
 const assets = [
   'index.html', 'styles.css', 'artwork.css', 'app.js', 'weather.mjs', 'location.mjs', 'pwa.mjs',
-  'manifest.webmanifest', 'icon.svg', 'weather-scenes.mjs', 'weather-icons.mjs',
+  'manifest.webmanifest', 'icon.svg', 'weather-scenes.mjs', 'weather-icons.mjs', 'solar.mjs', 'scene-lighting.mjs',
   ...BACKGROUND_FILES,
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png',
   'icons/apple-touch-180.png',
