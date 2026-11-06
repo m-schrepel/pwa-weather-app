@@ -5,6 +5,14 @@ body{background:#e9e5d9}
 .current{background:var(--bg)}
 .current .landscape{z-index:-3}
 .landscape img{image-rendering:auto}
+.solar-canvases{position:absolute;inset:0;filter:brightness(var(--solar-exposure,1))}
+.solar-canvases img{position:absolute;inset:0}
+.solar-canvases .solar-day{opacity:var(--solar-day-blend,1)}
+.solar-warmth,.solar-glow{position:absolute;inset:0;pointer-events:none}
+.solar-warmth{background:linear-gradient(#d8875255,#edab62aa 65%,#d3825370);opacity:var(--solar-warmth,0);mix-blend-mode:soft-light}
+.solar-glow{background:radial-gradient(ellipse 65% 15% at var(--solar-glow-x,50%) 57%,#f6c77ea8,transparent);opacity:var(--solar-glow,0);mix-blend-mode:screen}
+.weather-app[data-solar="true"] .weather-layer{filter:brightness(var(--solar-exposure,1))}
+.weather-app[data-solar="true"] .current::before{opacity:.3}
 /* Weather lighting affects the whole painting beneath the dashboard. */
 .landscape{isolation:isolate;--scene-tint:#82b4af;--scene-opacity:.06}
 .landscape::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:var(--scene-tint);opacity:var(--scene-opacity);mix-blend-mode:multiply}

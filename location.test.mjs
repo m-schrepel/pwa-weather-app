@@ -5,6 +5,7 @@ import vm from 'node:vm';
 import * as weather from './weather.mjs';
 import { backgroundAssets } from './weather-scenes.mjs';
 import { icon } from './weather-icons.mjs';
+import { landscapeLight } from './scene-lighting.mjs';
 import { detectLocation, coordinateLabel, cityName, FALLBACK_LOCATION } from './location.mjs';
 
 test('city lookup uses device coordinates and handles locality, missing names and failures', async () => {
@@ -65,12 +66,12 @@ const forecast = timezone => ({timezone, current:{time:now, temperature_2m:55, i
 async function appHarness(detected, lookup = async () => null) {
   const elements = new Map();
   const element = id => {
-    if (!elements.has(id)) elements.set(id, {textContent:'', dataset:{}, style:{}, setAttribute(){}, removeAttribute(){}, addEventListener(){}, querySelector(){return {src:''};}});
+    if (!elements.has(id)) elements.set(id, {textContent:'', dataset:{}, style:{setProperty(key,value){this[key]=value;}}, setAttribute(){}, removeAttribute(){}, addEventListener(){}, querySelector(){return {src:''};}});
     return elements.get(id);
   };
   const requests = [];
   let detection = detected, broken = false;
-  const context = vm.createContext({...weather, backgroundAssets, icon, formatLocalTime:weather.localTime, formatClockTime:weather.clockTime,
+  const context = vm.createContext({...weather, backgroundAssets, icon, landscapeLight, formatLocalTime:weather.localTime, formatClockTime:weather.clockTime,
     detectLocation:async () => detection, coordinateLabel, cityName:lookup, FALLBACK_LOCATION,
     fetchJson:async url => {
       requests.push(new URL(url));
@@ -84,7 +85,7 @@ async function appHarness(detected, lookup = async () => null) {
   vm.runInContext(source, context);
   // Drain the startup call and its fulfilled/rejected API promises.
   await new Promise(resolve => setImmediate(resolve));
-  return {element, requests, async refresh(next, fail=false) {
+  return {element, requests, relight(instant) { context.Date={now:()=>instant}; vm.runInContext('updateLighting()',context); }, async refresh(next, fail=false) {
     detection = next; broken = fail;
     await vm.runInContext('loadWeather()', context);
   }};
@@ -120,4 +121,19 @@ test('city replaces coordinates, survives failed fixes, and never leaks into a n
   await app.refresh({location:{latitude:40.713, longitude:-74.006, timezone:'auto'}});
   assert.equal(app.element('location-name').textContent, 'Current location');
   assert.match(app.element('location-detail').textContent, /40.713° N/);
+});
+
+
+test('live lighting follows the clock and active coordinates even without another weather response',async()=>{
+  const app=await appHarness({error:'Location access blocked.'});
+  app.relight(Date.parse('2026-11-05T20:00:00Z'));
+  const daylight=app.element('main').style['--solar-day-blend'];
+  const count=app.requests.length;
+  app.relight(Date.parse('2026-11-06T08:00:00Z'));
+  assert.ok(app.element('main').style['--solar-day-blend']<daylight);
+  assert.equal(app.element('main').dataset.period,'night');
+  assert.equal(app.requests.length,count);
+  await app.refresh({location:{latitude:35.676,longitude:139.65,timezone:'auto'}});
+  const light=landscapeLight(Date.parse('2026-11-06T08:00:00Z'),{latitude:35.676,longitude:139.65},undefined);
+  assert.equal(app.element('main').style['--solar-day-blend'],light.dayBlend);
 });

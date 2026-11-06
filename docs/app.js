@@ -2,6 +2,7 @@ import { icon } from './weather-icons.mjs';
 import { backgroundAssets } from './weather-scenes.mjs';
 import { finite, rounded, localTime as formatLocalTime, clockTime as formatClockTime, condition, uvCategory, aqiCategory, normalizeForecast, weatherUrl, airQualityUrl, fetchJson } from './weather.mjs';
 import { detectLocation, coordinateLabel, cityName, FALLBACK_LOCATION } from './location.mjs';
+import { landscapeLight } from './scene-lighting.mjs';
 const $ = (id) => document.getElementById(id);
 let activeLocation = FALLBACK_LOCATION;
 let forecastTimezone = FALLBACK_LOCATION.timezone;
@@ -14,7 +15,7 @@ const clockTime = time => formatClockTime(time, forecastTimezone);
 function renderBackgrounds(code, isDay) {
   const paths = backgroundAssets(code, isDay);
   const fallback = backgroundAssets(null, isDay);
-  for (const [id, key] of [['landscape','landscape'], ['weather-layer','atmosphere']]) {
+  for (const [id, key] of [['weather-layer','atmosphere']]) {
     const host = $(id);
     let img = host.querySelector('img');
     if (!img) {
@@ -33,6 +34,27 @@ function renderBackgrounds(code, isDay) {
   }
 }
 
+function updateLighting() {
+  const light=landscapeLight(Date.now(),activeLocation,lastWeather?.current.code);
+  const main=document.querySelector('main');
+  main.dataset.solar='true';
+  main.dataset.period=light.period;
+  for(const [key,value] of Object.entries({
+    '--solar-day-blend':light.dayBlend, '--solar-exposure':light.exposure,
+    '--solar-warmth':light.warmth, '--solar-glow':light.glow,
+    '--solar-glow-x':`${light.glowX}%`,
+  })) main.style.setProperty(key,value);
+  renderBackgrounds(lastWeather?.current.code,light.isDay);
+}
+
+let lightingTimer;
+function scheduleLighting() {
+  clearTimeout(lightingTimer);
+  if(document.hidden)return;
+  updateLighting();
+  lightingTimer=setTimeout(scheduleLighting,60_000);
+}
+
 function setValues(values) {
   for (const [id, value] of Object.entries(values)) $(id).textContent = value;
 }
@@ -42,7 +64,6 @@ function renderWeather(data) {
   const view = condition(c.code, c.isDay), mode = view.scene;
   const saved = data.saved || Date.now() / 1000 - c.time > 3 * 3600;
   document.querySelector('main').dataset.weather = mode;
-  document.querySelector('main').dataset.period = c.isDay ? 'day' : 'night';
   document.querySelector('main').dataset.overcast = String(c.code === 3);
   setValues({
     'current-title':view.label, 'current-temp':rounded(c.temp), high:`${rounded(days[0].high)}°`, low:`${rounded(days[0].low)}°`, feels:`${rounded(c.feels)}°`,
@@ -52,7 +73,7 @@ function renderWeather(data) {
   });
   $('rain-meter').style.width = `${outlook.chance ?? 0}%`;
   $('rain-card').title = 'Maximum hourly precipitation probability in the next 12 hours';
-  renderBackgrounds(c.code, c.isDay);
+  updateLighting();
   $('landscape').setAttribute('aria-label', `Watercolor illustration: ${view.label.toLowerCase()} over Moss Bay from the Marina Park pavilion area in Kirkland`);
   $('hourly').innerHTML = hours.map((hour,i) => `<div class="hour"><span class="time">${i === 0 && !saved ? 'NOW' : localTime(hour.time,{hour:'numeric'}).replace(' ','')}</span>${icon(condition(hour.code,hour.isDay).icon)}<span class="hour-temp">${rounded(hour.temp)}°</span><span class="rain-chance" aria-label="${rounded(hour.chance)} percent chance of precipitation">${rounded(hour.chance)}%</span></div>`).join('');
   $('daily').innerHTML = days.map((day,i) => {
@@ -82,14 +103,13 @@ let nextRefresh;
 let lastAttempt = 0;
 function clearForecast() {
   lastWeather = null;
-  document.querySelector('main').dataset.period = 'day';
   document.querySelector('main').dataset.overcast = 'false';
   for (const id of ['current-temp','high','low','feels','rain-value','wind-value','wind-direction','gust-value','uv-value','uv-label','sunrise','sunset']) $(id).textContent = '—';
   setValues({'current-title':'Loading weather…', 'rain-note':'Next 12 hours', 'wind-status':'Loading wind…', hourly:'Loading hourly forecast…', daily:'Loading daily forecast…'});
   $('rain-meter').style.width = '0%';
   document.querySelector('.uv-meter').dataset.level = -1;
   renderAirQuality(null);
-  renderBackgrounds(null, true);
+  updateLighting();
 }
 
 async function loadWeather() {
@@ -105,6 +125,7 @@ async function loadWeather() {
     if (next.latitude !== activeLocation.latitude || next.longitude !== activeLocation.longitude) clearForecast();
     activeLocation = next;
   }
+  updateLighting();
   const isDevice = !activeLocation.name;
   const locationKey = `${activeLocation.latitude},${activeLocation.longitude}`;
   const city = namedLocation?.key === locationKey ? namedLocation.name : null;
@@ -160,7 +181,9 @@ document.querySelectorAll('[data-icon]').forEach(el => el.innerHTML = icon(el.da
 $('use-location').addEventListener('click', loadWeather);
 window.addEventListener('online', loadWeather);
 document.addEventListener('visibilitychange', () => {
+  scheduleLighting();
   if (!document.hidden && Date.now() - lastAttempt >= 60_000) loadWeather();
 });
 clearForecast();
+scheduleLighting();
 loadWeather();
